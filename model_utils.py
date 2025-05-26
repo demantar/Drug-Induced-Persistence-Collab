@@ -21,7 +21,7 @@ FundamentalParamSetBD = namedtuple('FixedParamSet', 'mu nu b0 d0 b1 d1')
 # Linear model from last summer article. Note that h_mu = k and h_nu = -m
 LastYearParamSetLinear = namedtuple('LastYearParamSetLinear', 
                         'mu h_mu nu h_nu lambda0 d_lambda0 lambda1')
-LastYearParamSetLinearBD = namedtuple('LastYearParamSetLinear', 
+LastYearParamSetLinearBD = namedtuple('LastYearParamSetLinearBD', 
                         'mu h_mu nu h_nu b0 d0 d_d0 b1 d1')
 
 # Heaviside model from last summer article. Note changes in signs

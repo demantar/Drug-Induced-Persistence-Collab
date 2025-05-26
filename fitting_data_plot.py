@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 
-df = pd.read_csv('param_est_3.csv')
+df = pd.read_csv('param_est_4.csv')
 
 df = df.pivot(index=["Run", "Type"], columns="Parameter", values="Value").reset_index()
 
@@ -28,7 +28,8 @@ fig = px.box(
     x="Parameter",
     y="Value",
     points="all",
-    color="Type"
+    color="Type",
+    hover_data=["Run"]
 )
 
 fig.update_yaxes(type="log")

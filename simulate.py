@@ -31,7 +31,7 @@ def simulate_one_schedule(par, change_times, meas_times, doses, z0, z1, rel_meas
         if t >= meas_times[meas_time_ind]:
             res.append((z0 + z1) * 
                        math.exp(random.gauss(mu=0, 
-                                             sigma=math.sqrt(rel_meas_error))))
+                                             sigma=rel_meas_error)))
             meas_time_ind += 1
 
         event_rate_0 = z0 * (curr_par.b0 + curr_par.d0 + curr_par.mu)
