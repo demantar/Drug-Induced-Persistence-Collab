@@ -23,6 +23,8 @@ LastYearParamSetLinear = namedtuple('LastYearParamSetLinear',
                         'mu h_mu nu h_nu lambda0 d_lambda0 lambda1')
 LastYearParamSetLinearBD = namedtuple('LastYearParamSetLinearBD', 
                         'mu h_mu nu h_nu b0 d0 d_d0 b1 d1')
+LastYearParamSetLinearBD_no_h_nu = namedtuple('LastYearParamSetLinearBD_no_h_nu', 
+                        'mu h_mu nu b0 d0 d_d0 b1 d1')
 
 # Heaviside model from last summer article. Note changes in signs
 LastYearParamSetHeaviside = namedtuple('LastYearParamSetHeaviside',
@@ -59,11 +61,23 @@ def get_fund_param_set_bd(par, c):
                 par.b1,
                 par.d1
         )
+    if isinstance(par, LastYearParamSetLinearBD_no_h_nu):
+        return FundamentalParamSetBD(
+                par.mu + par.h_mu * c, 
+                np.maximum(par.nu, 0), 
+                par.b0, 
+                par.d0 + par.d_d0 * c / (c + 1), 
+                par.b1,
+                par.d1
+        )
 
 def get_bounds(param_type):
     if param_type is LastYearParamSetLinearBD:
         return ([0.0] * 3 + [-0.1] + [0.0] * 5,
                 [0.1] * 3 + [0.0] + [0.1] * 5)
+    if param_type is LastYearParamSetLinearBD_no_h_nu:
+        return ([0.0] * 8,
+                [0.1] * 8)
 
 # function that takes FixedParamSet and returns the infinatesimal generator matrix
 def inf_gen_mat(par):

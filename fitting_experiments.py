@@ -14,6 +14,7 @@ from datetime import datetime
 from functools import partial
 import pickle
 
+"""
 no_fits = 1
 paralell = True
 no_basin_hops = 2
@@ -75,6 +76,7 @@ lin_param_default = utils.LastYearParamSetLinearBD(
 
 used_params = lin_param_default
 used_param_type = type(used_params)
+"""
     
 # A function that calculates the sum of square error for the parameter
 # estimate params given a simulation or experiment sim
@@ -96,8 +98,8 @@ def sum_of_sq_error_log_growth_pulsed(params, sim, f0_init = 10/11):
 
     end = time.time()
     elapsed = end - begin
-    if elapsed > 1:
-        print(f'problematic params: {params}')
+    #if elapsed > 1:
+    #    print(f'problematic params: {params}')
     return sum_of_sq
 
 # a function to fit the parameters of a certain parameter regeme
@@ -142,7 +144,7 @@ def fit_params_log_growth_pulsed(sim, param_type, n_hops = 3):
     return param_type(*x)
 
 # Function partially written by ChatGPT
-def plot_params_fit_log_growth_pulsed(sim, params, def_params=lin_param_default):
+def plot_params_fit_log_growth_pulsed(sim, params, def_params):
     # Create figure
     fig = go.Figure()
 
@@ -188,7 +190,7 @@ def plot_params_fit_log_growth_pulsed(sim, params, def_params=lin_param_default)
 
     fig.show()
 
-def plot_params_fit_f0_pulsed(sim, params, def_params=lin_param_default): # TODO: change
+def plot_params_fit_f0_pulsed(sim, params, def_params): # TODO: change
     # Create figure
     fig = go.Figure()
 
@@ -262,6 +264,7 @@ def run_experiment_batch(used_params, sim_type_pulsed, n_fits, paralell = True, 
     fits = []
     sims = []
 
+    used_param_type = type(used_params)
     if paralell: # done by ChatGPT
         with concurrent.futures.ProcessPoolExecutor() as executor:
             results = list(executor.map(bound_fit, [None] * n_fits))
@@ -299,10 +302,10 @@ def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = Tru
             })
 
     # Add true values
-    for param in lin_param_default._fields:
+    for param in used_params._fields:
         data.append({
             "Parameter": param,
-            "Value": getattr(lin_param_default, param),
+            "Value": getattr(used_params, param),
             "Run": -1,
             "Type": "True"
         })
@@ -337,7 +340,7 @@ def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = Tru
             f'Columns: {list(df.columns)}\n'
             f'Simulation Type: {sim_type_pulsed}\n'
             f'Fit-ratios: {fit_ratios}\n'
-            f'Number of Fits: {no_fits}\n'
+            f'Number of Fits: {n_fits}\n'
             f'Parameters: {used_params}\n'
             f'Message: {message}\n'
             '---\n'
