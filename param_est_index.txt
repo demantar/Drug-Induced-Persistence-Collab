@@ -21,3 +21,49 @@ number of fits: 10
 parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
 note: just a test
 ---
+File: param_est_2.csv
+Time: 2025-05-26T10:03:52.580089
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+simulation type: MeasurementTypePulsed(change_times=[0, 50], meas_times=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+fit ratios: [0.6978660164095761]
+number of fits: 1
+parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+note: just a test
+---
+File: param_est_3.csv
+Time: 2025-05-26T10:06:00.782979
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+simulation type: MeasurementTypePulsed(change_times=[0, 50], meas_times=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+fit ratios: [0.7636091136733191]
+number of fits: 1
+parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+note: just a test
+---

@@ -12,9 +12,9 @@ import os
 import re
 from datetime import datetime
 
-no_fits = 10
+no_fits = 1
 paralell = True
-no_basin_hops = 4
+no_basin_hops = 2
 
 test_sim_type = utils.MeasurementType(
         doses = [1,10,20,50,75,100],
@@ -72,15 +72,19 @@ lin_param_default = utils.LastYearParamSetLinearBD(
 )
 
 used_params = lin_param_default
+used_param_type = type(used_params)
     
 
-def sum_of_sq_error_log_growth_pulsed(a, sim, f0_init = 10/11):
+def sum_of_sq_error_log_growth_pulsed(params, sim, f0_init = 10/11):
     begin = time.time()
-    params = utils.LastYearParamSetLinearBD(*a)
+    a = list(params)
+    #params = utils.LastYearParamSetLinearBD(*a)
     if np.any(np.array(a) > 1):
         #print(f'huge param {params}')
         return 1e100
-    if np.any(np.array(a) * np.array([1] * 3 + [-1] + [1] * 5) < 0):
+    lb, ub = utils.get_bounds(type(params))
+    if np.any((a < lb) | (a > ub)):
+        print(f' a: {a}, lb: {lb}, ub: {ub}')
         #print('negative param {params}')
         return 1e100
 
@@ -97,13 +101,18 @@ def sum_of_sq_error_log_growth_pulsed(a, sim, f0_init = 10/11):
     return sum_of_sq
 
 
-def fit_params_log_growth_pulsed(sim):
+def fit_params_log_growth_pulsed(sim, param_type):
     obj = lambda a : \
-            sum_of_sq_error_log_growth_pulsed(a, sim)
-    bounds = scipy.optimize.Bounds([0.0] * 3 + [-0.1] + [0.0] * 5, 
-                                   [0.1] * 3 + [0.0] + [0.1] * 5)
+            sum_of_sq_error_log_growth_pulsed(param_type(*a), sim)
 
-    x0 = [0.1] * 3 + [-0.1] + [0.1] * 5
+    #bounds = scipy.optimize.Bounds([0.0] * 3 + [-0.1] + [0.0] * 5, 
+    #                               [0.1] * 3 + [0.0] + [0.1] * 5)
+    lb, ub = utils.get_bounds(param_type)
+    bounds = scipy.optimize.Bounds(lb, ub)
+
+    #x0 = [0.1] * 3 + [-0.1] + [0.1] * 5
+
+    x0 = np.random.uniform(low=lb, high=ub)
 
     minimizer_kwargs = {
         'method': 'L-BFGS-B',
@@ -127,7 +136,7 @@ def fit_params_log_growth_pulsed(sim):
     )
     x = result.x
 
-    return utils.LastYearParamSetLinearBD(*x)
+    return param_type(*x)
 
 # Function partially written by ChatGPT
 def plot_params_fit_log_growth_pulsed(sim, params):
@@ -179,9 +188,9 @@ def plot_params_fit_log_growth_pulsed(sim, params):
 
 def fit_one(_):
     sim = simulate_pulsed(lin_param_default, sim_type_pulsed, 1000, 100, 0.005)
-    best_params = fit_params_log_growth_pulsed(sim)
-    best_fit_error = sum_of_sq_error_log_growth_pulsed(list(best_params), sim)
-    true_fit_error = sum_of_sq_error_log_growth_pulsed(list(used_params), sim)
+    best_params = fit_params_log_growth_pulsed(sim, used_param_type)
+    best_fit_error = sum_of_sq_error_log_growth_pulsed(best_params, sim)
+    true_fit_error = sum_of_sq_error_log_growth_pulsed(used_params, sim)
     print(f'best fit error {best_fit_error}')
     print(f'true fit error {true_fit_error}')
     print(best_params)
@@ -201,7 +210,7 @@ sims = []
 if paralell: # done by ChatGPT
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = list(executor.map(fit_one_tup, [None] * no_fits))
-    fits = [utils.LastYearParamSetLinearBD(*param_est_tuple) for param_est_tuple, _ in results]
+    fits = [used_param_type(*param_est_tuple) for param_est_tuple, _ in results]
     sims = [sim for _, sim in results]
 else:
     for i in range(no_fits):
@@ -213,8 +222,8 @@ print(fits)
 
 fit_ratios = []
 for best_params, sim in zip(fits, sims):
-    best_fit_error = sum_of_sq_error_log_growth_pulsed(list(best_params), sim)
-    true_fit_error = sum_of_sq_error_log_growth_pulsed(list(used_params), sim)
+    best_fit_error = sum_of_sq_error_log_growth_pulsed(best_params, sim)
+    true_fit_error = sum_of_sq_error_log_growth_pulsed(used_params, sim)
     fit_ratios.append(best_fit_error / true_fit_error)
 
 

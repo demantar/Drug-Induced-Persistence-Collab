@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 
-df = pd.read_csv('param_est_1.csv')
+df = pd.read_csv('param_est_3.csv')
 
 df = df.pivot(index=["Run", "Type"], columns="Parameter", values="Value").reset_index()
 

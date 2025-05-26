@@ -4,9 +4,7 @@
 from collections import namedtuple
 import numpy as np
 import scipy.integrate
-from scipy.interpolate import UnivariateSpline
 import scipy.linalg
-import math
 
 # 'datatype' for efficiently storing model parameters
 # in the case where the parameters do not depend on the dose
@@ -61,6 +59,11 @@ def get_fund_param_set_bd(par, c):
                 par.b1,
                 par.d1
         )
+
+def get_bounds(param_type):
+    if param_type is LastYearParamSetLinearBD:
+        return ([0.0] * 3 + [-0.1] + [0.0] * 5,
+                [0.1] * 3 + [0.0] + [0.1] * 5)
 
 # function that takes FixedParamSet and returns the infinatesimal generator matrix
 def inf_gen_mat(par):
@@ -192,43 +195,3 @@ def meas_type_to_meas_type_pulsed(meas_type):
             meas_times = meas_type.times,
             doses = np.array(meas_type.doses).reshape((len(meas_type.doses), 1))
     )
-
-
-# a function that takes a Measurement and approximates rho via the derivative
-# of a spline
-# WARNING: written by ChatGPT
-def rho_from_meas(meas, eval_points, spline_smoothing=0.0):
-    """
-    Compute the derivative of the log of time series via spline interpolation.
-
-    Parameters:
-        series_matrix (np.ndarray): Shape (n_series, n_times), time series values.
-        time_points (np.ndarray): Shape (n_times,), time points of measurements.
-        eval_points (np.ndarray): Shape (n_eval,), times at which to evaluate the derivative.
-        spline_smoothing (float): Spline smoothing factor. 0 means interpolate exactly.
-
-    Returns:
-        np.ndarray: Shape (n_series, n_eval), log-derivative at eval_points.
-    """
-    n_series, _ = meas.data.shape
-    n_eval = len(eval_points)
-    output = np.empty((n_series, n_eval))
-
-    for i in range(n_series):
-        y = meas.data[i]
-
-        # Avoid log of non-positive numbers
-        if np.any(y <= 0):
-            raise ValueError(f"Series {i} contains non-positive values, cannot take log.")
-
-        log_y = np.log(y)
-        spline = UnivariateSpline(meas.type.times, log_y, s=spline_smoothing)
-        spline_deriv = spline.derivative()
-        output[i] = spline_deriv(eval_points)
-
-    return output
-
-
-
-
-
