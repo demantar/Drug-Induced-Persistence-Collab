@@ -142,13 +142,13 @@ def fit_params_log_growth_pulsed(sim, param_type, n_hops = 3):
     return param_type(*x)
 
 # Function partially written by ChatGPT
-def plot_params_fit_log_growth_pulsed(sim, params):
+def plot_params_fit_log_growth_pulsed(sim, params, def_params=lin_param_default):
     # Create figure
     fig = go.Figure()
 
     colors = px.colors.qualitative.Plotly
 
-    log_growth_calc_true = np.log(utils.calc_meas_mat_bd(sim.type, lin_param_default, 10/11, 1).data)
+    log_growth_calc_true = np.log(utils.calc_meas_mat_bd(sim.type, def_params, 10/11, 1).data)
     log_growth_calc_fitted = np.log(utils.calc_meas_mat_bd(sim.type, params, 10/11, 1).data)
 
     for i, doses, counts in zip(itertools.count(), sim.type.doses, sim.data):
@@ -186,6 +186,53 @@ def plot_params_fit_log_growth_pulsed(sim, params):
         height=600
     )
 
+    fig.show()
+
+def plot_params_fit_f0_pulsed(sim, params, def_params=lin_param_default): # TODO: change
+    # Create figure
+    fig = go.Figure()
+
+    colors = px.colors.qualitative.Plotly
+
+    log_growth_calc_true = np.log(utils.calc_meas_mat_bd(sim.type, def_params, 10/11, 1).data)
+    log_growth_calc_fitted = np.log(utils.calc_meas_mat_bd(sim.type, params, 10/11, 1).data)
+
+    for i, doses, counts in zip(itertools.count(), sim.type.doses, sim.data):
+        color = colors[i % len(colors)]
+
+        switching_times = np.array(sim.type.change_times)
+        values = np.array([0] + list(doses))
+
+        c_t = lambda t: values[np.searchsorted(switching_times, t, side='right')]
+        f0 = utils.sol_f0_bd(params, c_t, sim.type.meas_times, 10/11)
+
+        fig.add_trace(go.Scatter(
+            x=sim.type.meas_times, y=f0,
+            mode='lines',
+            name=f'f_0 calc fit {i}',
+            line=dict(color=color, dash='dash') 
+        ))
+
+        f0 = utils.sol_f0_bd(def_params, c_t, sim.type.meas_times, 10/11)
+
+        fig.add_trace(go.Scatter(
+            x=sim.type.meas_times, y=f0,
+            mode='lines',
+            name=f'f_0 calc def {i}',
+            line=dict(color=color, dash='dot') 
+        ))
+
+    # Update layout
+    fig.update_layout(
+        title='10 Pairs of Functions of Time',
+        xaxis_title='Time',
+        yaxis_title='Function Value',
+        legend_title='Functions',
+        template='plotly_dark', 
+        height=600
+    )
+
+    print("hello")
     fig.show()
 
 # a function that simulates an experiment of a certain type, fits
@@ -279,7 +326,7 @@ def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = Tru
         next_idx = get_next_index(prefix='data_', suffix='.pkl')
         filename_data = f'data_{next_idx}.pkl'
         with open(filename_data, 'wb') as f:
-            pickle.dump((fits, sims), f)
+            pickle.dump((fits, sims, used_params), f)
 
         # Metadata
         info = (
