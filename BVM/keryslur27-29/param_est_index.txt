@@ -1,0 +1,613 @@
+Dataframe File: param_est_1.csv
+Pickle Data File: data_1.pkl
+Time: 2025-05-27T14:13:29.530566
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Fit-ratios: [1.0470355614173505, 1.0744613668095673, 0.9675826397827945, 0.9572706496357518, 0.9906859285174642, 0.9949676085975265, 0.9812311769146055, 1.196822789572509, 0.9846723412656198, 0.9795679222800967, 1.1493084937146922, 0.9566288243780506, 1.1519606853571596, 0.9298848516756554, 1.0436788926983018, 1.0846213126590398, 1.1510285192516445, 1.1920090511135215, 1.133352963589377, 1.2230401570650002]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed no meas error (longer) - difference difference squared
+---
+Dataframe File: param_est_2.csv
+Pickle Data File: data_2.pkl
+Time: 2025-05-27T14:25:00.014321
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 50], meas_times=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Fit-ratios: [0.9865638304026646, 0.9903830360369899, 0.9883423708699057, 0.9977456923224339, 0.980474742635067, 0.9815891027594021, 0.9956831348682891, 0.9873606476739125, 0.9969426584890545, 0.9763397535088142, 0.982816770581832, 0.9712987570407235, 0.9812035579144863, 0.9854021024717431, 1.0056820019816153, 0.9871295911709731, 0.9499133103496202, 0.991538678314029, 0.9915671218188618, 0.9716993845610841]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed no meas error - difference difference squared
+Dataframe File: param_est_3.csv
+Pickle Data File: data_3.pkl
+Time: 2025-05-28T13:15:15.201114
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 50], meas_times=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Fit-ratios: [0.41237583212358947, 0.2903599227389635, 0.4966674659109006, 0.33102394739151303, 0.3286791486166704, 0.3736851690342404, 0.2407153657139361, 0.29077249446452297, 0.290420441766136, 0.3080196703236899, 0.35495949760675977, 0.381934044244695, 0.30716944302536614, 0.38781240486948393, 0.3463619828872354, 0.29437420110224893, 0.37599091646746696, 0.28035574312321176, 0.4453763740004122, 0.3357207304597704]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed - new MLE (JUST A TEST)
+---
+Dataframe File: param_est_4.csv
+Pickle Data File: data_4.pkl
+Time: 2025-05-28T13:26:26.046649
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Fit-ratios: [0.7203549571575566, 0.7846383283742292, 0.7721418055641938, 0.9197056686077075, 0.6959852200719916, 0.8610577459542881, 0.669084446296469, 0.6953675896630273, 0.8360329885539596, 0.790751548182429, 0.41128143931300576, 0.41775979569233196, 0.8820137571160936, 0.3972832810894613, 0.8039278854065771, 0.4543698410195573, 0.7788552718414238, 0.6863630119774842, 0.6159012983009761, 0.798260221969484]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - new MLE (JUST A TEST)
+---
+Dataframe File: param_est_5.csv
+Pickle Data File: data_5.pkl
+Time: 2025-05-28T13:40:01.601586
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Fit-ratios: [0.48826773036759324, 0.4041581206141109, 0.3191881293689698, 0.4785532381592598, 0.7407378934504787, 0.8016120206485582, 0.7015739720994478, 0.45517877557859215, 0.48316078644817345, 0.5229894141815683, 0.4932208201425412, 0.8137434151340169, 0.35408605666638443, 0.4004596974191195, 0.6266697118341082, 0.43168725128789043, 0.5742965834235044, 0.38068670822899786, 0.6390185394628897, 0.716473476892617]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - new MLE (JUST A TEST)
+---
+Dataframe File: param_est_6.csv
+Pickle Data File: data_6.pkl
+Time: 2025-05-28T14:20:05.703204
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.7026988693810382]
+Number of Fits: 1
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - rms-growth
+---
+Dataframe File: param_est_7.csv
+Pickle Data File: data_7.pkl
+Time: 2025-05-28T14:20:18.839993
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [1.004344721127329]
+Number of Fits: 1
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - rms-growthrate
+---
+Dataframe File: param_est_8.csv
+Pickle Data File: data_8.pkl
+Time: 2025-05-28T14:20:34.536291
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.9125990611777675]
+Number of Fits: 1
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - new MLE
+---
+Dataframe File: param_est_9.csv
+Pickle Data File: data_9.pkl
+Time: 2025-05-28T14:20:52.576712
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.96406886709488]
+Number of Fits: 1
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - rms-growth
+---
+Dataframe File: param_est_10.csv
+Pickle Data File: data_10.pkl
+Time: 2025-05-28T14:21:17.674324
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.9853914289062284]
+Number of Fits: 1
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - rms-growthrate
+---
+Dataframe File: param_est_11.csv
+Pickle Data File: data_11.pkl
+Time: 2025-05-28T14:21:28.937790
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.5402739881468788]
+Number of Fits: 1
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - new MLE
+---
+Dataframe File: param_est_12.csv
+Pickle Data File: data_12.pkl
+Time: 2025-05-28T14:37:41.793359
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.8591481713998649, 0.6721621541064065, 0.7080292962525652, 0.8781659875261906, 0.9379035624047272, 1.0674984985697547, 0.8202080219906696, 0.987082145906429, 1.057423592516616, 0.9273551782665546, 1.0540188408118247, 0.7609262779520787, 0.7424661689503309, 0.9873563024781307, 0.8759647667526955, 0.9421621727418101, 0.8992830172350101, 0.8770175849847905, 0.9628335927353063, 0.8874145185439993]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - rms-growth
+---
+Dataframe File: param_est_13.csv
+Pickle Data File: data_13.pkl
+Time: 2025-05-28T14:46:43.291121
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.7374867837018038, 0.6546484853986462, 0.8508327526884883, 0.9567495156377184, 0.9416798485410702, 0.7753059320411838, 0.9823450985234718, 0.90226494493318, 0.9986741565187972, 0.8849865514214259, 0.9372948622173753, 0.8650217707164554, 0.8614970516661077, 0.72095574407442, 0.809483847380604, 0.9015524153333091, 0.7563089384423253, 0.9367914979313546, 0.8351097249551337, 0.9609976793181095]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - rms-growthrate
+---
+Dataframe File: param_est_14.csv
+Pickle Data File: data_14.pkl
+Time: 2025-05-28T14:55:24.843557
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.706383133828942, 0.8560902764583797, 0.9488656645838345, 0.9405524634785278, 0.6560375133346497, 0.9734842473054748, 0.897267423022379, 0.8784166228001135, 1.1060787526396654, 1.0164764278643292, 1.202083384944366, 1.0139935531208941, 1.004332454764927, 0.7936465924351914, 1.1717273979571656, 0.5768680293304187, 0.835223324110691, 0.806230557672099, 0.7625879948183767, 0.7597980887061837]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - new MLE
+---
+Dataframe File: param_est_15.csv
+Pickle Data File: data_15.pkl
+Time: 2025-05-28T15:04:15.710861
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.9433909275218986, 0.8724625828010448, 0.9800078377070394, 1.0417585850308275, 0.9532227912182899, 0.6416185140100129, 0.8289365150155674, 0.8833479878941844, 1.1089990938549088, 1.0676541149706713, 1.1291791326613458, 0.8439858595905659, 0.8392541389527315, 0.6532101990099982, 0.8562632756040466, 1.2266099257127472, 1.0306095583844994, 0.9478085909296691, 0.8324650509909431, 0.8243997854347661]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - rms-growth
+---
+Dataframe File: param_est_16.csv
+Pickle Data File: data_16.pkl
+Time: 2025-05-28T15:13:54.886631
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [1.0053827416658812, 0.90199178961675, 0.8641294311671752, 0.7735511279564119, 1.0166273371557084, 0.6757369168493585, 0.7494803074950597, 0.7850618441575834, 0.7352613685804766, 0.7447824201479034, 0.8891880145577931, 0.9094927857149393, 0.761638369889708, 0.9504303653944869, 0.5329406111176097, 0.9312793267234655, 0.8462763026780491, 0.9533393027261585, 0.8736538278290618, 1.0012132100914612]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - rms-growthrate
+---
+Dataframe File: param_est_17.csv
+Pickle Data File: data_17.pkl
+Time: 2025-05-28T15:22:19.538088
+Shape: (189, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.8746587655513378, 0.9003836448683883, 0.7745864431149678, 0.923210618540601, 0.9473651340666134, 0.7398109651256455, 0.8648944085290141, 0.8460705679563588, 0.8164736271072758, 0.7444858100708832, 1.1617482952787697, 0.7373669484208986, 0.9362376739793659, 0.8734020605082141, 0.9567634918834577, 0.8521203271908563, 1.0804541732028672, 0.8406166058144767, 1.013447697279574, 1.0305306223178883]
+Number of Fits: 20
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - new MLE
+---
+Dataframe File: param_est_18.csv
+Pickle Data File: data_18.pkl
+Time: 2025-05-29T00:09:43.582483
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.990717986486645]
+Number of Fits: 1
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal pulsed (longer) - normal-rms, 2 replicates, every 30 sec
+---
+Dataframe File: param_est_19.csv
+Pickle Data File: data_19.pkl
+Time: 2025-05-29T00:09:58.432540
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1],
+       [  1],
+       [  5],
+       [  5],
+       [ 10],
+       [ 10],
+       [ 20],
+       [ 20],
+       [ 50],
+       [ 50],
+       [ 75],
+       [ 75],
+       [100],
+       [100]]))
+Liklihood version: RMS-growth
+Fit-ratios: [1.15940133613064]
+Number of Fits: 1
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal fixed (longer) - normal-rms, 2 replicates, every 30 sec
+---
+Dataframe File: param_est_20.csv
+Pickle Data File: data_20.pkl
+Time: 2025-05-29T00:10:05.557065
+Shape: (18, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementTypePulsed(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   1],
+       [  1,   0],
+       [  5,   5],
+       [  5,   0],
+       [ 10,  10],
+       [ 10,   0],
+       [ 20,  20],
+       [ 20,   0],
+       [ 50,  50],
+       [ 50,   0],
+       [ 75,  75],
+       [ 75,   0],
+       [100, 100],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [52.82798848952282]
+Number of Fits: 1
+Parameters: LastYearParamSetLinearBD(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Message: normal mixed (longer) - normal-rms, 2 replicates, every 30 sec
+---

@@ -13,74 +13,13 @@ import re
 from datetime import datetime
 from functools import partial
 import pickle
+import numpy as np
+import numpy.linalg
 
-"""
-no_fits = 1
-paralell = True
-no_basin_hops = 2
-
-test_sim_type = utils.MeasurementType(
-        doses = [1,10,20,50,75,100],
-        times = [0,10,20,30,40,50,60,70,80,90,100] 
-)
-
-sim_type_pulsed1 = utils.MeasurementTypePulsed(
-    change_times = [0, 20, 40, 60, 80, 100],
-    meas_times = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-    doses = np.array([[1, 0, 1, 0, 1, 0], 
-                      [5, 0, 5, 0, 5, 0],
-                      [10, 0, 10, 0, 10, 0],
-                      [20, 0, 20, 0, 20, 0], 
-                      [50, 0, 50, 0, 50, 0],
-                      [75, 0, 75, 0, 75, 0],
-                      [100, 0, 100, 0, 100, 0]])
-)
-
-sim_type_pulsed2 = utils.MeasurementTypePulsed(
-    change_times = [0, 50],
-    meas_times = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-    doses = np.array([[1, 0],
-                      [5, 0],
-                      [10, 0],
-                      [20, 0],
-                      [50, 0],
-                      [75, 0],
-                      [100, 0]])
-)
-
-sim_type_pulsed3 = utils.MeasurementTypePulsed(
-    change_times = [0, 50],
-    meas_times = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-    doses = np.array([[1, 0], [1, 0], 
-                      [5, 0], [5, 0], 
-                      [10, 0], [10, 0], 
-                      [20, 0], [20, 0], 
-                      [50, 0], [50, 0], 
-                      [75, 0], [75, 0], 
-                      [100, 0], [100, 0]])
-)
-
-sim_type_pulsed = sim_type_pulsed3
-
-lin_param_default = utils.LastYearParamSetLinearBD(
-    mu = 0.0004,
-    h_mu = 0.00004,
-    nu = 0.004,
-    h_nu = -0.00004,
-    b0 = 0.04,
-    d0 = 0.0,
-    d_d0 = 0.08,
-    b1 = 0.001,
-    d1 = 0.0
-)
-
-used_params = lin_param_default
-used_param_type = type(used_params)
-"""
     
 # A function that calculates the sum of square error for the parameter
 # estimate params given a simulation or experiment sim
-def sum_of_sq_error_log_growth_pulsed(params, sim, f0_init = 10/11):
+def estimate_liklihood(params, sim, f0_init = 10/11, version='RMS-growth', meas_err=0.05):
     begin = time.time()
     a = list(params)
     #params = utils.LastYearParamSetLinearBD(*a)
@@ -94,7 +33,34 @@ def sum_of_sq_error_log_growth_pulsed(params, sim, f0_init = 10/11):
     # WARNING hacky way to find n0
     log_growth_calc = np.log(utils.calc_meas_mat_bd(sim.type, params, f0_init, sim.data[0, 0]).data)
     
-    sum_of_sq = np.sum((log_growth_meas - log_growth_calc)**2, axis = None)
+    sum_of_sq = 0
+    if version == 'RMS-growth':
+        sum_of_sq = np.sum((log_growth_meas - log_growth_calc)**2, axis = None)
+    elif version == 'RMS-growthrate':
+        sum_of_sq = np.sum((np.diff(log_growth_meas) - np.diff(log_growth_calc))**2, axis = None)
+    elif version == 'new':
+        for i, (meas, calc) in enumerate(zip(log_growth_meas, log_growth_calc)):
+            s = np.zeros((len(meas), len(meas)))
+            switching_times = np.array(sim.type.change_times)
+            values = np.array([0] + list(sim.type.doses[i]))
+            c_t = lambda t: values[np.searchsorted(switching_times, t, side='right')]
+            for j in range(len(meas) - 1):
+                t_l = sim.type.meas_times[j]
+                t_r = sim.type.meas_times[j + 1]
+                # WARNING: the following is a hacky and inaccurate way to integrate
+                par_l = utils.get_fund_param_set_bd(params, c_t(t_l)) 
+                par_r = utils.get_fund_param_set_bd(params, c_t(t_r))
+                sigma_l = 0.8 * (par_l.b0 + par_r.d0) / calc[j]  # TODO: better approx for f0
+                sigma_r = 0.8 * (par_r.b0 + par_r.d0) / calc[j + 1]  # TODO: better approx for f0
+                dt = t_r - t_l 
+                sigma = dt * (sigma_l + sigma_r) / 2 
+                s[(j+1):,j] = sigma
+            c = s @ s.T + (meas_err**2) * np.identity(len(meas))
+            # WARNING: the following wont work with meas_error = 0
+            delta = meas - calc
+            inc = delta @ np.linalg.solve(c, delta)
+            sum_of_sq += inc
+
 
     end = time.time()
     elapsed = end - begin
@@ -106,9 +72,9 @@ def sum_of_sq_error_log_growth_pulsed(params, sim, f0_init = 10/11):
 # to a simulation or experiment. It uses the l-bfgs-b minimizer
 # and does several basin hops to make sure it is not getting stuck 
 # in a local minima
-def fit_params_log_growth_pulsed(sim, param_type, n_hops = 3):
+def fit_params_log_growth_pulsed(sim, param_type, n_hops=3, meas_error=0.05, liklihood_vers='RMS-growth'):
     obj = lambda a : \
-            sum_of_sq_error_log_growth_pulsed(param_type(*a), sim)
+            estimate_liklihood(param_type(*a), sim, version=liklihood_vers, meas_err=meas_error)
 
     #bounds = scipy.optimize.Bounds([0.0] * 3 + [-0.1] + [0.0] * 5, 
     #                               [0.1] * 3 + [0.0] + [0.1] * 5)
@@ -190,7 +156,46 @@ def plot_params_fit_log_growth_pulsed(sim, params, def_params):
 
     fig.show()
 
-def plot_params_fit_f0_pulsed(sim, params, def_params): # TODO: change
+def plot_params_fit_log_growth_pulsed_diff(sim, params, def_params):
+    # Create figure
+    fig = go.Figure()
+
+    colors = px.colors.qualitative.Plotly
+
+    log_growth_calc_true = np.log(utils.calc_meas_mat_bd(sim.type, def_params, 10/11, 1).data)
+    log_growth_calc_fitted = np.log(utils.calc_meas_mat_bd(sim.type, params, 10/11, 1).data)
+
+    for i, doses, counts in zip(itertools.count(), sim.type.doses, sim.data):
+
+        color = colors[i % len(colors)]
+
+        fig.add_trace(go.Scatter(
+            x=sim.type.meas_times, y=np.log(counts/counts[0]) - log_growth_calc_true[i],
+            mode='lines',
+            name=f'sim - true {i}',
+            line=dict(color=color, dash='solid')
+        ))
+
+        fig.add_trace(go.Scatter(
+            x=sim.type.meas_times, y=log_growth_calc_fitted[i] - log_growth_calc_true[i],
+            mode='lines',
+            name=f'calc fitted - calc_true {i}',
+            line=dict(color=color, dash='dash')  
+        ))
+
+    # Update layout
+    fig.update_layout(
+        title='10 Pairs of Functions of Time',
+        xaxis_title='Time',
+        yaxis_title='Function Value',
+        legend_title='Functions',
+        template='plotly_dark', 
+        height=600
+    )
+
+    fig.show()
+
+def plot_params_fit_f0_pulsed(sim, params, def_params): 
     # Create figure
     fig = go.Figure()
 
@@ -240,11 +245,11 @@ def plot_params_fit_f0_pulsed(sim, params, def_params): # TODO: change
 # a function that simulates an experiment of a certain type, fits
 # parameters to the data, and prints info on how well the parameters
 # were fit compared to the old parameters
-def fit_one_tup(_, used_params, sim_type_pulsed, n_basin_hops, meas_sigma):
+def fit_one_tup(_, used_params, sim_type_pulsed, n_basin_hops, meas_sigma, liklihood_version="RMS-growth"):
     sim = simulate_pulsed(used_params, sim_type_pulsed, 1000, 100, meas_sigma)
-    best_params = fit_params_log_growth_pulsed(sim, type(used_params), n_basin_hops)
-    best_fit_error = sum_of_sq_error_log_growth_pulsed(best_params, sim)
-    true_fit_error = sum_of_sq_error_log_growth_pulsed(used_params, sim)
+    best_params = fit_params_log_growth_pulsed(sim, type(used_params), n_basin_hops, liklihood_vers=liklihood_version,meas_error=meas_sigma)
+    best_fit_error = estimate_liklihood(best_params, sim, meas_err=meas_sigma, version=liklihood_version)
+    true_fit_error = estimate_liklihood(used_params, sim, meas_err=meas_sigma, version=liklihood_version)
     print(f'best fit error {best_fit_error}')
     print(f'true fit error {true_fit_error}')
     print(best_params)
@@ -252,13 +257,14 @@ def fit_one_tup(_, used_params, sim_type_pulsed, n_basin_hops, meas_sigma):
 
 # a function that simulates several experiments to better understand how
 # estimateable the parameters are
-def run_experiment_batch(used_params, sim_type_pulsed, n_fits, paralell = True, n_basin_hops = 3, meas_sigma = 0.05):
+def run_experiment_batch(used_params, sim_type_pulsed, n_fits, paralell = True, n_basin_hops = 3, meas_sigma = 0.05, liklihood_version='RMS-growth'):
     bound_fit = partial(
         fit_one_tup,
         used_params=used_params,
         sim_type_pulsed=sim_type_pulsed,
         n_basin_hops=n_basin_hops,
-        meas_sigma=meas_sigma
+        meas_sigma=meas_sigma,
+        liklihood_version=liklihood_version
     )
 
     fits = []
@@ -280,13 +286,13 @@ def run_experiment_batch(used_params, sim_type_pulsed, n_fits, paralell = True, 
 
 # a function that calls run_experiment_batch and saves the results in 
 # such a way that it is easy to find and work with them
-def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = True, n_basin_hops = 3, file_pref = "param_est_", meas_sigma = 0.05, message = "no_message"):
-    fits, sims = run_experiment_batch(used_params, sim_type_pulsed, n_fits, paralell, n_basin_hops, meas_sigma)
+def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = True, n_basin_hops = 3, file_pref = "param_est_", meas_sigma = 0.05, message = "no_message", liklihood_vers="RMS-growth"):
+    fits, sims = run_experiment_batch(used_params, sim_type_pulsed, n_fits, paralell, n_basin_hops, meas_sigma, liklihood_version=liklihood_vers)
 
     fit_ratios = []
     for best_params, sim in zip(fits, sims):
-        best_fit_error = sum_of_sq_error_log_growth_pulsed(best_params, sim)
-        true_fit_error = sum_of_sq_error_log_growth_pulsed(used_params, sim)
+        best_fit_error = estimate_liklihood(best_params, sim, meas_err=meas_sigma, version=liklihood_vers)
+        true_fit_error = estimate_liklihood(used_params, sim, meas_err=meas_sigma, version=liklihood_vers)
         fit_ratios.append(best_fit_error / true_fit_error)
 
 
@@ -339,6 +345,7 @@ def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = Tru
             f'Shape: {df.shape}\n'
             f'Columns: {list(df.columns)}\n'
             f'Simulation Type: {sim_type_pulsed}\n'
+            f'Liklihood version: {liklihood_vers}\n'
             f'Fit-ratios: {fit_ratios}\n'
             f'Number of Fits: {n_fits}\n'
             f'Parameters: {used_params}\n'
