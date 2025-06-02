@@ -1,3 +1,5 @@
+# File for plotting the fitting plots resulting from the simulations
+# NOTE: a lot of the plotting is written by ChatGPT (under superivsion)
 import pandas as pd
 import plotly.express as px
 import numpy as np
@@ -6,53 +8,33 @@ import chart_studio.tools as tls
 import plotly.graph_objects as go
 import sys
 
-tls.set_credentials_file(username='benediktvm', api_key='srhhXtHgU7EhSvi9Vslf')
+# whether to upload the plots into the cloud or simply display them
+use_plotly_cloud = False
 
-if len(sys.argv) > 1:
-    file = sys.argv[1]
-else:
-    file = 'param_est_3.csv'
+if use_plotly_cloud:
+    tls.set_credentials_file(username='', api_key='') # change these to use cloud
 
-if len(sys.argv) > 2:
-    title = sys.argv[2]
-else:
-    title = "Parameter Estimates"
+# names of csv files to plot
+filenames = [f"param_est_{i}.csv" for i in range(1, 13)]
 
+# corresponding titles of the plots
+titles = [
+     "normal pulsed (longer) - normal-rms, 2 replicates, every 30 sec",
+     "normal fixed (longer) - normal-rms, 2 replicates, every 30 sec",
+     "normal mixed (longer) - normal-rms, 2 replicates, every 30 sec",
+     "normal pulsed (longer) - normal-rms, 2 replicates, every 10 sec",
+     "normal fixed (longer) - normal-rms, 2 replicates, every 10 sec",
+     "normal mixed (longer) - normal-rms, 2 replicates, every 10 sec",
+     "normal pulsed (longer) - normal-rms, 6 replicates, every 30 sec",
+     "normal fixed (longer) - normal-rms, 6 replicates, every 30 sec",
+     "normal mixed (longer) - normal-rms, 6 replicates, every 30 sec",
+     "normal pulsed (longer) - normal-rms, 6 replicates, every 10 sec",
+     "normal fixed (longer) - normal-rms, 6 replicates, every 10 sec",
+     "normal mixed (longer) - normal-rms, 6 replicates, every 10 sec"
+]
+
+# functiion that returns a single plot
 def get_plot(filename, msg):
-    """
-    df = pd.read_csv(filename)
-
-    df = df.pivot(index=["Run", "Type"], columns="Parameter", values="Value").reset_index()
-
-
-    # 2. Compute new derived parameter(s)
-    df['abs(lambda0)'] = np.abs(df['b0'] - df['d0'])
-    df['abs(lambda1)'] = np.abs(df['b1'] - df['d1'])
-    df['abs(h_nu)'] = np.abs(df['h_nu'])
-
-    df_long = df.melt(
-        id_vars=["Run", "Type"],
-        value_vars=["mu", "h_mu", "nu", "abs(h_nu)", "abs(lambda0)", "abs(lambda1)", "d_d0"],
-        #value_vars=["mu", "h_mu", "nu", "abs(lambda0)", "abs(lambda1)"],
-        var_name="Parameter",
-        value_name="Value"
-    )
-
-    fig = px.box(
-        df_long,
-        x="Parameter",
-        y="Value",
-        points="all",
-        color="Type",
-        hover_data=["Run"]
-    )
-
-    fig.update_layout(title=f"{title} ({msg})", height=400)
-    fig.update_yaxes(type="log", range=[-7, -0.5])
-
-    return fig
-    """
-
     # Read and transform
     df = pd.read_csv(filename)
     df = df.pivot(index=["Run", "Type"], columns="Parameter", values="Value").reset_index()
@@ -107,26 +89,12 @@ def get_plot(filename, msg):
 
     return fig
 
-filenames = [f"param_est_{i}.csv" for i in range(1, 13)]
-
-titles = [
-     "normal pulsed (longer) - normal-rms, 2 replicates, every 30 sec",
-     "normal fixed (longer) - normal-rms, 2 replicates, every 30 sec",
-     "normal mixed (longer) - normal-rms, 2 replicates, every 30 sec",
-     "normal pulsed (longer) - normal-rms, 2 replicates, every 10 sec",
-     "normal fixed (longer) - normal-rms, 2 replicates, every 10 sec",
-     "normal mixed (longer) - normal-rms, 2 replicates, every 10 sec",
-     "normal pulsed (longer) - normal-rms, 6 replicates, every 30 sec",
-     "normal fixed (longer) - normal-rms, 6 replicates, every 30 sec",
-     "normal mixed (longer) - normal-rms, 6 replicates, every 30 sec",
-     "normal pulsed (longer) - normal-rms, 6 replicates, every 10 sec",
-     "normal fixed (longer) - normal-rms, 6 replicates, every 10 sec",
-     "normal mixed (longer) - normal-rms, 6 replicates, every 10 sec"
-]
 
 for filename, title in zip(filenames, titles):
     fig = get_plot(filename, title)
-    py.plot(fig, filename=title, auto_open=False)
-    #fig.show()
+    if use_plotly_cloud:
+        py.plot(fig, filename=title, auto_open=False)
+    else: 
+        fig.show()
 
 

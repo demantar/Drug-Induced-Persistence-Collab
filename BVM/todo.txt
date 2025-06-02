@@ -1,0 +1,4 @@
+* split fitting_experiments.py into multiple files
+* rename fitting_experiements_test.py
+* Support for different estimations of f0 and n(t = 0)
+* More extensive testing

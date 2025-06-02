@@ -8,52 +8,28 @@ import scipy.linalg
 
 # 'datatype' for efficiently storing model parameters
 # in the case where the parameters do not depend on the dose
-# *should* work with numpy arrays instead of numbers
-FundamentalParamSet = namedtuple('FixedParamSet', 'mu nu lambda0 lambda1')
-# Similar set with b0, d0, b1, d1 instead of lambda0, lambda1
-FundamentalParamSetBD = namedtuple('FixedParamSet', 'mu nu b0 d0 b1 d1')
+# NOTE: it is important that the first argument of namedtuple exactly matches
+# the name of the type
+FundamentalParamSet = namedtuple('FundamentalParamSet', 'mu nu b0 d0 b1 d1')
 
 # the following are parameter sets for various different parameter regimes.
-# to make a new regime, just add a line and then add to the function
-# get_fund_param_set to explain how to get the fundamental parameters
-# from this regime
+# to make a new regime, just add a line and then add to the functions
+# get_fund_param_set and get_bounds to explain how to get the fundamental 
+# parameters from this regime and what are resonable bounds for the parameter
 
 # Linear model from last summer article. Note that h_mu = k and h_nu = -m
 LastYearParamSetLinear = namedtuple('LastYearParamSetLinear', 
-                        'mu h_mu nu h_nu lambda0 d_lambda0 lambda1')
-LastYearParamSetLinearBD = namedtuple('LastYearParamSetLinearBD', 
                         'mu h_mu nu h_nu b0 d0 d_d0 b1 d1')
-LastYearParamSetLinearBD_no_h_nu = namedtuple('LastYearParamSetLinearBD_no_h_nu', 
+LastYearParamSetLinear_no_h_nu = namedtuple('LastYearParamSetLinear_no_h_nu', 
                         'mu h_mu nu b0 d0 d_d0 b1 d1')
 
-# Heaviside model from last summer article. Note changes in signs
-LastYearParamSetHeaviside = namedtuple('LastYearParamSetHeaviside',
-                            'mu d_mu nu d_nu lambda0 d_lambda0 lambda1')
-
-# function that takes a VariableParamSet par and a dose c and returns a FixedParamSet
-# for that dose, assuming Michaelis-Menten functions
-# in some other places, they have been made positive and other formulas adjusted
-# *should* work with numpy arrays instead of numbers
-# code works better if numpy vectorized functions are used
+# function that takes a prameter set par and a dose c and returns a fundamental
+# parameter set for that dose
+# in some places, they have been made positive and other formulas adjusted
+# code should use numpy vectorized functions for c
 def get_fund_param_set(par, c):
     if isinstance(par, LastYearParamSetLinear):
         return FundamentalParamSet(
-                par.mu + par.h_mu * c, 
-                par.nu + par.h_nu * c, 
-                par.lambda0 + par.d_lambda0 * c / (c + 1),
-                par.lambda1 
-        )
-    if isinstance(par, LastYearParamSetHeaviside):
-        return FundamentalParamSet(
-            par.mu if abs(c) <= 1e-9 else par.mu + par.d_mu,
-            par.nu if abs(c) <= 1e-9 else par.nu,
-            par.lambda0 * par.d_lambda0 * c / (c + 1),
-            par.lambda1
-        )
-
-def get_fund_param_set_bd(par, c):
-    if isinstance(par, LastYearParamSetLinearBD):
-        return FundamentalParamSetBD(
                 par.mu + par.h_mu * c, 
                 np.maximum(par.nu + par.h_nu * c, 0), 
                 par.b0, 
@@ -61,8 +37,8 @@ def get_fund_param_set_bd(par, c):
                 par.b1,
                 par.d1
         )
-    if isinstance(par, LastYearParamSetLinearBD_no_h_nu):
-        return FundamentalParamSetBD(
+    if isinstance(par, LastYearParamSetLinear_no_h_nu):
+        return FundamentalParamSet(
                 par.mu + par.h_mu * c, 
                 np.maximum(par.nu, 0), 
                 par.b0, 
@@ -71,71 +47,91 @@ def get_fund_param_set_bd(par, c):
                 par.d1
         )
 
+# a function that takes a parameter set type and returns bounds
+# for the parameter. The fist list in the tuple is the lower bound
+# and the latter is an upper bound.
 def get_bounds(param_type):
-    if param_type is LastYearParamSetLinearBD:
+    if param_type is LastYearParamSetLinear:
         return ([0.0] * 3 + [-0.1] + [0.0] * 5,
                 [0.1] * 3 + [0.0] + [0.1] * 5)
-    if param_type is LastYearParamSetLinearBD_no_h_nu:
+    if param_type is LastYearParamSetLinear_no_h_nu:
         return ([0.0] * 8,
                 [0.1] * 8)
 
-# function that takes FixedParamSet and returns the infinatesimal generator matrix
+
+# The following namedtuples are 'datatypes' to store types of experiments
+# and measurements / simulations of those experiments
+
+# Tuple for the type of a measurement / simulation
+# at time meas_times[i] the doses become the i-th column in doses
+# it is assumed that the dose at time zero is 0
+# arrays should be numpy arrays
+MeasurementType = namedtuple('MeasurementType', 
+                                   'change_times meas_times doses')
+# A tuple to store the results of a measurement / simulation
+Measurement = namedtuple('Measurement', 'type data')
+
+# A function that takes FixedParamSet and returns the infinatesimal generator matrix
 def inf_gen_mat(par):
-    return np.array([[par.lambda0 - par.mu, par.mu], 
-                     [par.nu, par.lambda1 - par.nu]])
-# for birth death model
-def inf_gen_mat_bd(par):
     lambda0 = par.b0 - par.d0
     lambda1 = par.b1 - par.d1
     return np.array([[lambda0 - par.mu, par.mu], 
                      [par.nu, lambda1 - par.nu]])
 
-def calc_meas_mat_bd(meas_type_pulsed, params, f0_init, n0):
+# A function that takes a measurment type and generates a percise measurement
+# of the cell count assuming the deterministic simplification
+# (the ODE) via matrix exponentiation
+def calc_meas_mat(meas_type_pulsed, params, f0_init, n0):
     results = []
-    for dose_sched in meas_type_pulsed.doses:
+    for dose_sched in meas_type_pulsed.doses: # iterate through each tumor
         dose_result = []
         n = np.array([[f0_init, 1 - f0_init]]) * n0
         i_change = 0
         t_curr = 0
-        for i_meas in range(len(meas_type_pulsed.meas_times)):
+        # iterate through all measurement times
+        for i_meas in range(len(meas_type_pulsed.meas_times)): 
             t_nxt = meas_type_pulsed.meas_times[i_meas]
+            # a loop to update the dosage
             while (i_change < len(meas_type_pulsed.change_times) - 1
-                   and meas_type_pulsed.change_times[i_change + 1] <= t_nxt):
-                par_fix = get_fund_param_set_bd(params, dose_sched[i_change])
+                   and meas_type_pulsed.change_times[i_change + 1] <= t_nxt):  
+                par_fix = get_fund_param_set(params, dose_sched[i_change])
                 t_new = meas_type_pulsed.change_times[i_change + 1]
-                n = n @ scipy.linalg.expm((t_new - t_curr) * inf_gen_mat_bd(par_fix)) 
+                n = n @ scipy.linalg.expm((t_new - t_curr) * inf_gen_mat(par_fix)) 
                 i_change += 1
                 t_curr = t_new
-            par_fix = get_fund_param_set_bd(params, dose_sched[i_change])
-            n = n @ scipy.linalg.expm((t_nxt - t_curr) * inf_gen_mat_bd(par_fix)) 
+            par_fix = get_fund_param_set(params, dose_sched[i_change])
+            n = n @ scipy.linalg.expm((t_nxt - t_curr) * inf_gen_mat(par_fix)) 
             t_curr = t_nxt
             dose_result.append(np.sum(n, axis=None))
         results.append(dose_result)
     return Measurement(meas_type_pulsed, np.array(results))
 
             
-
-
-
 # A function that takes in a FixedParamSet and returns the derivative of 
 # f0
 # *should* work with numpy arrays instead of numbers
 def f0_prime(f0, fix_par):
-    a = fix_par.lambda1 - fix_par.lambda0
-    b = -(fix_par.lambda1 - fix_par.lambda0 + fix_par.mu + fix_par.nu)
+    lambda0 = fix_par.b0 - fix_par.d0
+    lambda1 = fix_par.b1 - fix_par.d1
+    a = lambda1 - lambda0
+    b = -(lambda1 - lambda0 + fix_par.mu + fix_par.nu)
     c = fix_par.nu
     return a * f0 * f0 + b * f0 + c
 
-# A functino that takes a FixedParamSet and a dosage and returns the derivative
+# A functinon that takes a FixedParamSet and a dosage and returns the derivative
 # *should* work with numpy arrays instead of numbers
 def f0_prime_c(f0, var_par, c):
     return f0_prime(f0, get_fund_param_set(var_par, c))
 
-# A function that calculates the growth rate rho (denoted u in the prev article)
+# A function that calculates the growth rate rho given f0 and 
+# a fixed parameter set (denoted u in the prev article)
 # *should* work with numpy arrays instead of numbers
 def rho(f0, fix_par):
-    return fix_par.lambda0 * f0 + fix_par.lambda1 * (1 - f0)
+    lambda0 = fix_par.b0 - fix_par.d0
+    lambda1 = fix_par.b1 - fix_par.d1
+    return lambda0 * f0 + lambda1 * (1 - f0)
 
+# similar to the previous function but given a variable parameter set and a dose
 def rho_c(f0, var_par, c):
     return rho(f0, get_fund_param_set(var_par, c))
 
@@ -149,63 +145,6 @@ def sol_f0(var_par, c_t, t_eval, f0_init):
 
 # function that finds the logarithm of the relative total growth. That is 
 # the integral of the growth rate. It is computed using simpsons rule
-def log_growth(f0_t, var_par, c, t_eval):
-    return scipy.integrate.cumulative_simpson(rho_c(f0_t, var_par, c), x=t_eval, initial=0)
+def log_growth(f0_t, var_par, c_t, t_eval):
+    return scipy.integrate.cumulative_simpson(rho_c(f0_t, var_par, c_t(t_eval)), x=t_eval, initial=0)
 
-## --- Dangerous copy pasted code adjusted for BD version 
-# A function that takes in a FixedParamSet and returns the derivative of 
-# f0
-# *should* work with numpy arrays instead of numbers
-def f0_prime_bd(f0, fix_par):
-    lambda0 = fix_par.b0 - fix_par.d0
-    lambda1 = fix_par.b1 - fix_par.d1
-    a = lambda1 - lambda0
-    b = -(lambda1 - lambda0 + fix_par.mu + fix_par.nu)
-    c = fix_par.nu
-    return a * f0 * f0 + b * f0 + c
-
-# A functino that takes a FixedParamSet and a dosage and returns the derivative
-# *should* work with numpy arrays instead of numbers
-def f0_prime_c_bd(f0, var_par, c):
-    return f0_prime_bd(f0, get_fund_param_set_bd(var_par, c))
-
-# A function that calculates the growth rate rho (denoted u in the prev article)
-# *should* work with numpy arrays instead of numbers
-def rho_bd(f0, fix_par):
-    lambda0 = fix_par.b0 - fix_par.d0
-    lambda1 = fix_par.b1 - fix_par.d1
-    return lambda0 * f0 + lambda1 * (1 - f0)
-
-def rho_c_bd(f0, var_par, c):
-    return rho_bd(f0, get_fund_param_set_bd(var_par, c))
-
-# Function that solves for f0 given a function c_t that takes in an
-# numpy array of time and returns the doses at those times. It also takes in an 
-# initial f_0 and a variable parameter and times to evaluate the solution at
-def sol_f0_bd(var_par, c_t, t_eval, f0_init):
-    f0_ode = lambda t, y : f0_prime_c_bd(y, var_par, c_t(t))
-    return scipy.integrate.solve_ivp(f0_ode, (min(t_eval), max(t_eval)), 
-                                     [f0_init], t_eval=t_eval).y.flatten()
-
-# function that finds the logarithm of the relative total growth. That is 
-# the integral of the growth rate. It is computed using simpsons rule
-def log_growth_bd(f0_t, var_par, c_t, t_eval):
-    return scipy.integrate.cumulative_simpson(rho_c_bd(f0_t, var_par, c_t(t_eval)), x=t_eval, initial=0)
-
-# A tuple to remember dimensions of measurments
-MeasurementType = namedtuple('MeasurementType', 'doses times')
-Measurement = namedtuple('Measurement', 'type data')
-
-# Similar where the dose is varying in time
-# at time meas_times[i] the doses become the i-th column in doses
-# it is assumed that the dose at time zero is 0
-MeasurementTypePulsed = namedtuple('MeasurementTypePulsed', 
-                                   'change_times meas_times doses')
-
-# convert MeasurementType to more general MeasurementTypePulsed for convenience
-def meas_type_to_meas_type_pulsed(meas_type):
-    return MeasurementTypePulsed(
-            change_times = [0], 
-            meas_times = meas_type.times,
-            doses = np.array(meas_type.doses).reshape((len(meas_type.doses), 1))
-    )

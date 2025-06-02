@@ -1,8 +1,10 @@
+# A file for queuing and saving simulated experiments
 import fitting_experiments
 import model_utils as utils
 import numpy as np
 
-sim_type_1 = utils.MeasurementTypePulsed(
+# set up measurement types for simulations
+sim_type_1 = utils.MeasurementType(
     change_times = [0, 50],
     meas_times = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
     doses = np.array([[1, 0], [1, 0], [1, 0],
@@ -14,7 +16,7 @@ sim_type_1 = utils.MeasurementTypePulsed(
                       [100, 0], [100, 0], [100, 0]])
 )
 
-sim_type_2 = utils.MeasurementTypePulsed(
+sim_type_2 = utils.MeasurementType(
     change_times = [0],
     meas_times = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
     doses = np.array([[1], [1], [1],
@@ -26,7 +28,7 @@ sim_type_2 = utils.MeasurementTypePulsed(
                       [100], [100], [100]])
 )
 
-sim_type_1_smaller_doses = utils.MeasurementTypePulsed(
+sim_type_1_smaller_doses = utils.MeasurementType(
     change_times = [0, 50],
     meas_times = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
     doses = np.array([[1, 0], [1, 0], [1, 0],
@@ -38,7 +40,7 @@ sim_type_1_smaller_doses = utils.MeasurementTypePulsed(
                       [100, 0], [100, 0], [100, 0]]) / 10
 )
 
-sim_type_2_smaller_doses = utils.MeasurementTypePulsed(
+sim_type_2_smaller_doses = utils.MeasurementType(
     change_times = [0],
     meas_times = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
     doses = np.array([[1], [1], [1],
@@ -50,7 +52,7 @@ sim_type_2_smaller_doses = utils.MeasurementTypePulsed(
                       [100], [100], [100]]) / 10
 )
 
-sim_type_1_long = utils.MeasurementTypePulsed(
+sim_type_1_long = utils.MeasurementType(
     change_times = [0, 150],
     meas_times = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300],
     doses = np.array([[1, 0], [1, 0], [1, 0],
@@ -62,7 +64,7 @@ sim_type_1_long = utils.MeasurementTypePulsed(
                       [100, 0], [100, 0], [100, 0]])
 )
 
-sim_type_2_long = utils.MeasurementTypePulsed(
+sim_type_2_long = utils.MeasurementType(
     change_times = [0],
     meas_times = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300],
     doses = np.array([[1], [1], [1],
@@ -74,7 +76,7 @@ sim_type_2_long = utils.MeasurementTypePulsed(
                       [100], [100], [100]])
 )
 
-sim_type_1_smaller_doses_long = utils.MeasurementTypePulsed(
+sim_type_1_smaller_doses_long = utils.MeasurementType(
     change_times = [0, 150],
     meas_times = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300],
     doses = np.array([[1, 0], [1, 0], [1, 0],
@@ -86,7 +88,7 @@ sim_type_1_smaller_doses_long = utils.MeasurementTypePulsed(
                       [100, 0], [100, 0], [100, 0]]) / 10
 )
 
-sim_type_2_smaller_doses_long = utils.MeasurementTypePulsed(
+sim_type_2_smaller_doses_long = utils.MeasurementType(
     change_times = [0],
     meas_times = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300],
     doses = np.array([[1], [1], [1],
@@ -98,7 +100,7 @@ sim_type_2_smaller_doses_long = utils.MeasurementTypePulsed(
                       [100], [100], [100]]) / 10
 )
 
-sim_type_pulsed_long_2repl_every30 = utils.MeasurementTypePulsed(
+sim_type_pulsed_long_2repl_every30 = utils.MeasurementType(
     change_times = [0, 150],
     meas_times = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300],
     doses = np.array([[1, 0], [1, 0],
@@ -110,7 +112,7 @@ sim_type_pulsed_long_2repl_every30 = utils.MeasurementTypePulsed(
                       [100, 0], [100, 0]])
 )
 
-sim_type_fixed_long_2repl_every30 = utils.MeasurementTypePulsed(
+sim_type_fixed_long_2repl_every30 = utils.MeasurementType(
     change_times = [0],
     meas_times = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300],
     doses = np.array([[1], [1],
@@ -122,7 +124,7 @@ sim_type_fixed_long_2repl_every30 = utils.MeasurementTypePulsed(
                       [100], [100]])
 )
 
-sim_type_mixed_long_2repl_every30 = utils.MeasurementTypePulsed(
+sim_type_mixed_long_2repl_every30 = utils.MeasurementType(
     change_times = [0, 150],
     meas_times = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300],
     doses = np.array([[1, 1], [1, 0],
@@ -134,7 +136,7 @@ sim_type_mixed_long_2repl_every30 = utils.MeasurementTypePulsed(
                       [100, 100], [100, 0]])
 )
 
-sim_type_pulsed_long_2repl_every10 = utils.MeasurementTypePulsed(
+sim_type_pulsed_long_2repl_every10 = utils.MeasurementType(
     change_times = [0, 150],
     meas_times = [10 * k for k in range(31)],
     doses = np.array([[1, 0], [1, 0],
@@ -146,7 +148,7 @@ sim_type_pulsed_long_2repl_every10 = utils.MeasurementTypePulsed(
                       [100, 0], [100, 0]])
 )
 
-sim_type_fixed_long_2repl_every10 = utils.MeasurementTypePulsed(
+sim_type_fixed_long_2repl_every10 = utils.MeasurementType(
     change_times = [0],
     meas_times = [10 * k for k in range(31)],
     doses = np.array([[1], [1],
@@ -158,7 +160,7 @@ sim_type_fixed_long_2repl_every10 = utils.MeasurementTypePulsed(
                       [100], [100]])
 )
 
-sim_type_mixed_long_2repl_every10 = utils.MeasurementTypePulsed(
+sim_type_mixed_long_2repl_every10 = utils.MeasurementType(
     change_times = [0, 150],
     meas_times = [10 * k for k in range(31)],
     doses = np.array([[1, 1], [1, 0],
@@ -170,7 +172,7 @@ sim_type_mixed_long_2repl_every10 = utils.MeasurementTypePulsed(
                       [100, 100], [100, 0]])
 )
 
-sim_type_pulsed_long_6repl_every30 = utils.MeasurementTypePulsed(
+sim_type_pulsed_long_6repl_every30 = utils.MeasurementType(
     change_times = [0, 150],
     meas_times = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300],
     doses = np.array([[1, 0], [1, 0], [1, 0], [1, 0], [1, 0], [1, 0],
@@ -182,7 +184,7 @@ sim_type_pulsed_long_6repl_every30 = utils.MeasurementTypePulsed(
                       [100, 0], [100, 0], [100, 0], [100, 0], [100, 0], [100, 0]])
 )
 
-sim_type_fixed_long_6repl_every30 = utils.MeasurementTypePulsed(
+sim_type_fixed_long_6repl_every30 = utils.MeasurementType(
     change_times = [0],
     meas_times = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300],
     doses = np.array([[1], [1], [1], [1], [1], [1],
@@ -194,7 +196,7 @@ sim_type_fixed_long_6repl_every30 = utils.MeasurementTypePulsed(
                       [100], [100], [100], [100], [100], [100]])
 )
 
-sim_type_mixed_long_6repl_every30 = utils.MeasurementTypePulsed(
+sim_type_mixed_long_6repl_every30 = utils.MeasurementType(
     change_times = [0, 150],
     meas_times = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300],
     doses = np.array([[1, 1], [1, 0], [1, 1], [1, 0], [1, 1], [1, 0],
@@ -206,7 +208,7 @@ sim_type_mixed_long_6repl_every30 = utils.MeasurementTypePulsed(
                       [100, 100], [100, 0], [100, 100], [100, 0], [100, 100], [100, 0]])
 )
 
-sim_type_pulsed_long_6repl_every10 = utils.MeasurementTypePulsed(
+sim_type_pulsed_long_6repl_every10 = utils.MeasurementType(
     change_times = [0, 150],
     meas_times = [10 * k for k in range(31)],
     doses = np.array([[1, 0], [1, 0], [1, 0], [1, 0], [1, 0], [1, 0],
@@ -218,7 +220,7 @@ sim_type_pulsed_long_6repl_every10 = utils.MeasurementTypePulsed(
                       [100, 0], [100, 0], [100, 0], [100, 0], [100, 0], [100, 0]])
 )
 
-sim_type_fixed_long_6repl_every10 = utils.MeasurementTypePulsed(
+sim_type_fixed_long_6repl_every10 = utils.MeasurementType(
     change_times = [0],
     meas_times = [10 * k for k in range(31)],
     doses = np.array([[1], [1], [1], [1], [1], [1],
@@ -230,7 +232,7 @@ sim_type_fixed_long_6repl_every10 = utils.MeasurementTypePulsed(
                       [100], [100], [100], [100], [100], [100]])
 )
 
-sim_type_mixed_long_6repl_every10 = utils.MeasurementTypePulsed(
+sim_type_mixed_long_6repl_every10 = utils.MeasurementType(
     change_times = [0, 150],
     meas_times = [10 * k for k in range(31)],
     doses = np.array([[1, 1], [1, 0], [1, 1], [1, 0], [1, 1], [1, 0],
@@ -242,7 +244,8 @@ sim_type_mixed_long_6repl_every10 = utils.MeasurementTypePulsed(
                       [100, 100], [100, 0], [100, 100], [100, 0], [100, 100], [100, 0]])
 )
 
-lin_param_default = utils.LastYearParamSetLinearBD(
+# make instances of parameter regimes to test against
+lin_param_default = utils.LastYearParamSetLinear(
     mu = 0.0004,
     h_mu = 0.00004,
     nu = 0.004,
@@ -254,7 +257,7 @@ lin_param_default = utils.LastYearParamSetLinearBD(
     d1 = 0.0
 )
 
-lin_param_default = utils.LastYearParamSetLinearBD(
+lin_param_default = utils.LastYearParamSetLinear(
     mu = 0.0004,
     h_mu = 0.00004,
     nu = 0.004,
@@ -266,7 +269,7 @@ lin_param_default = utils.LastYearParamSetLinearBD(
     d1 = 0.0
 )
 
-lin_param_default_large_h_nu = utils.LastYearParamSetLinearBD(
+lin_param_default_large_h_nu = utils.LastYearParamSetLinear(
     mu = 0.0004,
     h_mu = 0.00004,
     nu = 0.004,
@@ -278,7 +281,7 @@ lin_param_default_large_h_nu = utils.LastYearParamSetLinearBD(
     d1 = 0.0
 )
 
-lin_param_default_no_h_nu = utils.LastYearParamSetLinearBD_no_h_nu(
+lin_param_default_no_h_nu = utils.LastYearParamSetLinear_no_h_nu(
     mu = 0.0004,
     h_mu = 0.00004,
     nu = 0.004,
@@ -291,6 +294,7 @@ lin_param_default_no_h_nu = utils.LastYearParamSetLinearBD_no_h_nu(
 
 n_exp = 20
 
+# list the experments
 experiment_inputs_jun26 = [
     #(n_exp, True, 2, sim_type_1, lin_param_default, "pulsed 3 repl"), 
     #(n_exp, True, 2, sim_type_2, lin_param_default, "fixed 3 repl"),
@@ -310,6 +314,7 @@ experiment_inputs_jun26 = [
 
 n_exp = 30
 n_hop = 4
+# list the experments
 experiment_inputs = [
     (n_exp, True, n_hop, sim_type_1_long, lin_param_default, "normal pulsed (longer) - rms-growth", 0.05, 'RMS-growth'),
     (n_exp, True, n_hop, sim_type_1_long, lin_param_default, "normal pulsed (longer) - rms-growthrate", 0.05, 'RMS-growthrate'),
@@ -319,6 +324,7 @@ experiment_inputs = [
     (n_exp, True, n_hop, sim_type_1_long, lin_param_default, "normal pulsed (longer) - new MLE", 0.00001, 'new')
 ]
 
+# list the experments
 experiment_inputs = [
     (n_exp, True, n_hop, sim_type_pulsed_long_2repl_every30, lin_param_default, "normal pulsed (longer) - normal-rms, 2 replicates, every 30 sec", 0.05, 'RMS-growth'),
     (n_exp, True, n_hop, sim_type_fixed_long_2repl_every30, lin_param_default, "normal fixed (longer) - normal-rms, 2 replicates, every 30 sec", 0.05, 'RMS-growth'),
@@ -334,6 +340,7 @@ experiment_inputs = [
     (n_exp, True, n_hop, sim_type_mixed_long_6repl_every10, lin_param_default, "normal mixed (longer) - normal-rms, 6 replicates, every 10 sec", 0.05, 'RMS-growth'),
 ]
 
+# iterate through all experiments and run them
 for i, tup in enumerate(experiment_inputs):
     print(f"============== starting experiment {i} ==================")
     n_exp, paralell, n_hops, sim_type, param_reg, msg, meas_sigma, mle_vers = tup

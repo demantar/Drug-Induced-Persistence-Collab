@@ -1,3 +1,6 @@
+# functions for fitting parameters for Measurement instances and 
+# testing the effeciveness of fits via simulations
+# TODO: split this in two
 import model_utils as utils
 from simulate import *
 import scipy.optimize
@@ -14,12 +17,10 @@ from datetime import datetime
 from functools import partial
 import pickle
 import numpy as np
-import numpy.linalg
 
     
-# A function that calculates the sum of square error for the parameter
-# estimate params given a simulation or experiment sim
-def estimate_liklihood(params, sim, f0_init = 10/11, version='RMS-growth', meas_err=0.05):
+# A function that calculates the objective to minimize in the parameter estimation
+def estimation_objective(params, sim, f0_init = 10/11, version='RMS-growth', meas_err=0.05):
     begin = time.time()
     a = list(params)
     #params = utils.LastYearParamSetLinearBD(*a)
@@ -31,7 +32,7 @@ def estimate_liklihood(params, sim, f0_init = 10/11, version='RMS-growth', meas_
 
     log_growth_meas = np.log(sim.data)
     # WARNING hacky way to find n0
-    log_growth_calc = np.log(utils.calc_meas_mat_bd(sim.type, params, f0_init, sim.data[0, 0]).data)
+    log_growth_calc = np.log(utils.calc_meas_mat(sim.type, params, f0_init, sim.data[0, 0]).data)
     
     sum_of_sq = 0
     if version == 'RMS-growth':
@@ -48,8 +49,8 @@ def estimate_liklihood(params, sim, f0_init = 10/11, version='RMS-growth', meas_
                 t_l = sim.type.meas_times[j]
                 t_r = sim.type.meas_times[j + 1]
                 # WARNING: the following is a hacky and inaccurate way to integrate
-                par_l = utils.get_fund_param_set_bd(params, c_t(t_l)) 
-                par_r = utils.get_fund_param_set_bd(params, c_t(t_r))
+                par_l = utils.get_fund_param_set(params, c_t(t_l)) 
+                par_r = utils.get_fund_param_set(params, c_t(t_r))
                 sigma_l = 0.8 * (par_l.b0 + par_r.d0) / calc[j]  # TODO: better approx for f0
                 sigma_r = 0.8 * (par_r.b0 + par_r.d0) / calc[j + 1]  # TODO: better approx for f0
                 dt = t_r - t_l 
@@ -74,16 +75,12 @@ def estimate_liklihood(params, sim, f0_init = 10/11, version='RMS-growth', meas_
 # in a local minima
 def fit_params_log_growth_pulsed(sim, param_type, n_hops=3, meas_error=0.05, liklihood_vers='RMS-growth'):
     obj = lambda a : \
-            estimate_liklihood(param_type(*a), sim, version=liklihood_vers, meas_err=meas_error)
+            estimation_objective(param_type(*a), sim, version=liklihood_vers, meas_err=meas_error)
 
-    #bounds = scipy.optimize.Bounds([0.0] * 3 + [-0.1] + [0.0] * 5, 
-    #                               [0.1] * 3 + [0.0] + [0.1] * 5)
-    lb, ub = utils.get_bounds(param_type)
+    lb, ub = utils.get_bounds(param_type) # lower and upper bounds for variables
     bounds = scipy.optimize.Bounds(lb, ub)
 
-    #x0 = [0.1] * 3 + [-0.1] + [0.1] * 5
-
-    x0 = np.random.uniform(low=lb, high=ub)
+    x0 = np.random.uniform(low=lb, high=ub) # initial guess
 
     minimizer_kwargs = {
         'method': 'L-BFGS-B',
@@ -109,6 +106,10 @@ def fit_params_log_growth_pulsed(sim, param_type, n_hops=3, meas_error=0.05, lik
 
     return param_type(*x)
 
+# function to plot the logarithm of the size of the simulation,
+# the deterministic simplification given true parameter def_params, 
+# and the deterministic simplficiation given param estimate params
+# It is good for testing and debugging parameter estimation
 # Function partially written by ChatGPT
 def plot_params_fit_log_growth_pulsed(sim, params, def_params):
     # Create figure
@@ -116,8 +117,8 @@ def plot_params_fit_log_growth_pulsed(sim, params, def_params):
 
     colors = px.colors.qualitative.Plotly
 
-    log_growth_calc_true = np.log(utils.calc_meas_mat_bd(sim.type, def_params, 10/11, 1).data)
-    log_growth_calc_fitted = np.log(utils.calc_meas_mat_bd(sim.type, params, 10/11, 1).data)
+    log_growth_calc_true = np.log(utils.calc_meas_mat(sim.type, def_params, 10/11, 1).data)
+    log_growth_calc_fitted = np.log(utils.calc_meas_mat(sim.type, params, 10/11, 1).data)
 
     for i, doses, counts in zip(itertools.count(), sim.type.doses, sim.data):
 
@@ -156,14 +157,15 @@ def plot_params_fit_log_growth_pulsed(sim, params, def_params):
 
     fig.show()
 
+# similar to last function but plots difference
 def plot_params_fit_log_growth_pulsed_diff(sim, params, def_params):
     # Create figure
     fig = go.Figure()
 
     colors = px.colors.qualitative.Plotly
 
-    log_growth_calc_true = np.log(utils.calc_meas_mat_bd(sim.type, def_params, 10/11, 1).data)
-    log_growth_calc_fitted = np.log(utils.calc_meas_mat_bd(sim.type, params, 10/11, 1).data)
+    log_growth_calc_true = np.log(utils.calc_meas_mat(sim.type, def_params, 10/11, 1).data)
+    log_growth_calc_fitted = np.log(utils.calc_meas_mat(sim.type, params, 10/11, 1).data)
 
     for i, doses, counts in zip(itertools.count(), sim.type.doses, sim.data):
 
@@ -195,14 +197,17 @@ def plot_params_fit_log_growth_pulsed_diff(sim, params, def_params):
 
     fig.show()
 
+# another testing / debugging function to test how the estimate for f0
+# calculated from the estimated parameters compares to the deterministic
+# estimation of f0 given the true parameters
 def plot_params_fit_f0_pulsed(sim, params, def_params): 
     # Create figure
     fig = go.Figure()
 
     colors = px.colors.qualitative.Plotly
 
-    log_growth_calc_true = np.log(utils.calc_meas_mat_bd(sim.type, def_params, 10/11, 1).data)
-    log_growth_calc_fitted = np.log(utils.calc_meas_mat_bd(sim.type, params, 10/11, 1).data)
+    log_growth_calc_true = np.log(utils.calc_meas_mat(sim.type, def_params, 10/11, 1).data)
+    log_growth_calc_fitted = np.log(utils.calc_meas_mat(sim.type, params, 10/11, 1).data)
 
     for i, doses, counts in zip(itertools.count(), sim.type.doses, sim.data):
         color = colors[i % len(colors)]
@@ -211,7 +216,7 @@ def plot_params_fit_f0_pulsed(sim, params, def_params):
         values = np.array([0] + list(doses))
 
         c_t = lambda t: values[np.searchsorted(switching_times, t, side='right')]
-        f0 = utils.sol_f0_bd(params, c_t, sim.type.meas_times, 10/11)
+        f0 = utils.sol_f0(params, c_t, sim.type.meas_times, 10/11)
 
         fig.add_trace(go.Scatter(
             x=sim.type.meas_times, y=f0,
@@ -220,7 +225,7 @@ def plot_params_fit_f0_pulsed(sim, params, def_params):
             line=dict(color=color, dash='dash') 
         ))
 
-        f0 = utils.sol_f0_bd(def_params, c_t, sim.type.meas_times, 10/11)
+        f0 = utils.sol_f0(def_params, c_t, sim.type.meas_times, 10/11)
 
         fig.add_trace(go.Scatter(
             x=sim.type.meas_times, y=f0,
@@ -246,17 +251,18 @@ def plot_params_fit_f0_pulsed(sim, params, def_params):
 # parameters to the data, and prints info on how well the parameters
 # were fit compared to the old parameters
 def fit_one_tup(_, used_params, sim_type_pulsed, n_basin_hops, meas_sigma, liklihood_version="RMS-growth"):
-    sim = simulate_pulsed(used_params, sim_type_pulsed, 1000, 100, meas_sigma)
+    sim = simulate(used_params, sim_type_pulsed, 1000, 100, meas_sigma)
     best_params = fit_params_log_growth_pulsed(sim, type(used_params), n_basin_hops, liklihood_vers=liklihood_version,meas_error=meas_sigma)
-    best_fit_error = estimate_liklihood(best_params, sim, meas_err=meas_sigma, version=liklihood_version)
-    true_fit_error = estimate_liklihood(used_params, sim, meas_err=meas_sigma, version=liklihood_version)
+    best_fit_error = estimation_objective(best_params, sim, meas_err=meas_sigma, version=liklihood_version)
+    true_fit_error = estimation_objective(used_params, sim, meas_err=meas_sigma, version=liklihood_version)
     print(f'best fit error {best_fit_error}')
     print(f'true fit error {true_fit_error}')
     print(best_params)
     return (tuple(best_params), sim)
 
 # a function that simulates several experiments to better understand how
-# estimateable the parameters are
+# estimateable the parameters are.
+# note support for paralellization on multiple cores
 def run_experiment_batch(used_params, sim_type_pulsed, n_fits, paralell = True, n_basin_hops = 3, meas_sigma = 0.05, liklihood_version='RMS-growth'):
     bound_fit = partial(
         fit_one_tup,
@@ -291,8 +297,8 @@ def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = Tru
 
     fit_ratios = []
     for best_params, sim in zip(fits, sims):
-        best_fit_error = estimate_liklihood(best_params, sim, meas_err=meas_sigma, version=liklihood_vers)
-        true_fit_error = estimate_liklihood(used_params, sim, meas_err=meas_sigma, version=liklihood_vers)
+        best_fit_error = estimation_objective(best_params, sim, meas_err=meas_sigma, version=liklihood_vers)
+        true_fit_error = estimation_objective(used_params, sim, meas_err=meas_sigma, version=liklihood_vers)
         fit_ratios.append(best_fit_error / true_fit_error)
 
 
@@ -361,5 +367,3 @@ def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = Tru
         print(f"Appended info to: {index_file}")
 
     save_single(df, fits, sims)
-
-#run_and_save_experiment(used_params, sim_type_pulsed, no_fits, paralell = True, n_basin_hops = 3, file_pref = "param_est_")

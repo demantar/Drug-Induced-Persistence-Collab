@@ -1,3 +1,4 @@
+# short script to plot a single experment from a pkl file
 import fitting_experiments
 import model_utils as utils
 import pickle
