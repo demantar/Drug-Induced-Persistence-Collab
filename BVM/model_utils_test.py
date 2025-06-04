@@ -20,7 +20,7 @@ lin_param_default = utils.LastYearParamSetLinear(
 )
 
 constdose3 = lambda t : 3
-times = np.linspace(0, 500, 300)
+times = np.linspace(0, 1000, 300)
 
 # how to calculate f0 via ODE
 f0 = utils.sol_f0(lin_param_default, constdose3, times, 1) 
@@ -34,8 +34,11 @@ print(rho.shape)
 print(times.shape)
 print(log_growth.shape)
 
+equilibf0 = utils.equilibf0(utils.get_fund_param_set(lin_param_default, constdose3(0)))
 df = pd.DataFrame({'f0':f0, 't':times})
 fig_f0 = px.line(df, x='t', y='f0')
+fig_f0.add_shape(type='line', x0=df.t.min(), x1=df.t.max(), y0=equilibf0, y1=equilibf0,
+                 line=dict(color='red'))
 fig_f0.show()
 
 df = pd.DataFrame({'rho':rho, 't':times})

@@ -293,58 +293,28 @@ lin_param_default_no_h_nu = utils.LastYearParamSetLinear_no_h_nu(
 )
 
 n_exp = 20
+n_hop = 5
 
 # list the experments
-experiment_inputs_jun26 = [
-    #(n_exp, True, 2, sim_type_1, lin_param_default, "pulsed 3 repl"), 
-    #(n_exp, True, 2, sim_type_2, lin_param_default, "fixed 3 repl"),
-    (n_exp, True, 2, sim_type_1, lin_param_default, "normal pulsed", 0.05),
-    (n_exp, True, 10, sim_type_1, lin_param_default, "normal pulsed + 10 minimizations", 0.05),
-    (n_exp, True, 2, sim_type_1, lin_param_default_no_h_nu, "normal pulsed without h_nu param", 0.05),
-    (n_exp, True, 2, sim_type_1, lin_param_default, "normal pulsed no meas error", 0.00),
-    (n_exp, True, 2, sim_type_1_smaller_doses, lin_param_default_large_h_nu, "normal pulsed with low dose, large h_nu", 0.05),
-    (n_exp, True, 2, sim_type_2, lin_param_default, "normal fixed", 0.05),
-    (n_exp, True, 2, sim_type_1_long, lin_param_default, "normal pulsed (longer)", 0.05),
-    (n_exp, True, 10, sim_type_1_long, lin_param_default, "normal pulsed + 10 minimizations (longer)", 0.05),
-    (n_exp, True, 2, sim_type_1_long, lin_param_default_no_h_nu, "normal pulsed without h_nu param (longer)", 0.05),
-    (n_exp, True, 2, sim_type_1_long, lin_param_default, "normal pulsed no meas error (longer)", 0.00),
-    (n_exp, True, 2, sim_type_1_smaller_doses_long, lin_param_default_large_h_nu, "normal pulsed with low dose, large h_nu (longer)", 0.05),
-    (n_exp, True, 2, sim_type_2_long, lin_param_default, "normal fixed (longer)", 0.05)
-]
-
-n_exp = 30
-n_hop = 4
-# list the experments
+f0_init = utils.equilibf0(utils.get_fund_param_set(lin_param_default, 0))
+print(f0_init)
 experiment_inputs = [
-    (n_exp, True, n_hop, sim_type_1_long, lin_param_default, "normal pulsed (longer) - rms-growth", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_1_long, lin_param_default, "normal pulsed (longer) - rms-growthrate", 0.05, 'RMS-growthrate'),
-    (n_exp, True, n_hop, sim_type_1_long, lin_param_default, "normal pulsed (longer) - new MLE", 0.05, 'new'),
-    (n_exp, True, n_hop, sim_type_1_long, lin_param_default, "normal pulsed (longer) - rms-growth", 0.00001, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_1_long, lin_param_default, "normal pulsed (longer) - rms-growthrate", 0.00001, 'RMS-growthrate'),
-    (n_exp, True, n_hop, sim_type_1_long, lin_param_default, "normal pulsed (longer) - new MLE", 0.00001, 'new')
+    (n_exp, 1000, f0_init, True, n_hop, sim_type_pulsed_long_2repl_every30, lin_param_default, "f0_init test: true = equilib, strat = true", 0.05, 'RMS-growth', 'true'),
+    (n_exp, 1000, f0_init, True, n_hop, sim_type_pulsed_long_2repl_every30, lin_param_default, "f0_init test: true = equilib, strat = equilib", 0.05, 'RMS-growth', 'equilib'),
+    (n_exp, 1000, f0_init, True, n_hop, sim_type_pulsed_long_2repl_every30, lin_param_default, "f0_init test: true = equilib, strat = =1", 0.05, 'RMS-growth', '=1'),
+    (n_exp, 1000, f0_init, True, n_hop, sim_type_pulsed_long_2repl_every30, lin_param_default, "f0_init test: true = equilib, strat = fit", 0.05, 'RMS-growth', 'fit'),
+    (n_exp, 1000, 0.999, True, n_hop, sim_type_pulsed_long_2repl_every30, lin_param_default, "f0_init test: true = 1, strat = true", 0.05, 'RMS-growth', 'true'),
+    (n_exp, 1000, 0.999, True, n_hop, sim_type_pulsed_long_2repl_every30, lin_param_default, "f0_init test: true = 1, strat = equilib", 0.05, 'RMS-growth', 'equilib'),
+    (n_exp, 1000, 0.999, True, n_hop, sim_type_pulsed_long_2repl_every30, lin_param_default, "f0_init test: true = 1, strat = =1", 0.05, 'RMS-growth', '=1'),
+    (n_exp, 1000, 0.999, True, n_hop, sim_type_pulsed_long_2repl_every30, lin_param_default, "f0_init test: true = 1, strat = fit", 0.05, 'RMS-growth', 'fit'),
 ]
 
-# list the experments
-experiment_inputs = [
-    (n_exp, True, n_hop, sim_type_pulsed_long_2repl_every30, lin_param_default, "normal pulsed (longer) - normal-rms, 2 replicates, every 30 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_fixed_long_2repl_every30, lin_param_default, "normal fixed (longer) - normal-rms, 2 replicates, every 30 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_mixed_long_2repl_every30, lin_param_default, "normal mixed (longer) - normal-rms, 2 replicates, every 30 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_pulsed_long_2repl_every10, lin_param_default, "normal pulsed (longer) - normal-rms, 2 replicates, every 10 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_fixed_long_2repl_every10, lin_param_default, "normal fixed (longer) - normal-rms, 2 replicates, every 10 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_mixed_long_2repl_every10, lin_param_default, "normal mixed (longer) - normal-rms, 2 replicates, every 10 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_pulsed_long_6repl_every30, lin_param_default, "normal pulsed (longer) - normal-rms, 6 replicates, every 30 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_fixed_long_6repl_every30, lin_param_default, "normal fixed (longer) - normal-rms, 6 replicates, every 30 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_mixed_long_6repl_every30, lin_param_default, "normal mixed (longer) - normal-rms, 6 replicates, every 30 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_pulsed_long_6repl_every10, lin_param_default, "normal pulsed (longer) - normal-rms, 6 replicates, every 10 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_fixed_long_6repl_every10, lin_param_default, "normal fixed (longer) - normal-rms, 6 replicates, every 10 sec", 0.05, 'RMS-growth'),
-    (n_exp, True, n_hop, sim_type_mixed_long_6repl_every10, lin_param_default, "normal mixed (longer) - normal-rms, 6 replicates, every 10 sec", 0.05, 'RMS-growth'),
-]
 
 # iterate through all experiments and run them
 for i, tup in enumerate(experiment_inputs):
     print(f"============== starting experiment {i} ==================")
-    n_exp, paralell, n_hops, sim_type, param_reg, msg, meas_sigma, mle_vers = tup
+    n_exp, cell_cnt, f0, paralell, n_hops, sim_type, param_reg, msg, meas_sigma, mle_vers, f0_strat = tup
     fitting_experiments.run_and_save_experiment(
-        param_reg, sim_type, n_exp, paralell=paralell, n_basin_hops=n_hops, message=msg 
+        param_reg, sim_type, n_exp, cell_cnt, f0, paralell=paralell, n_basin_hops=n_hops, message=msg, f0_strat=f0_strat
     )
 

@@ -15,22 +15,18 @@ if use_plotly_cloud:
     tls.set_credentials_file(username='', api_key='') # change these to use cloud
 
 # names of csv files to plot
-filenames = [f"param_est_{i}.csv" for i in range(1, 13)]
+filenames = [f"param_est_{i}.csv" for i in range(1, 8 + 8)]
 
 # corresponding titles of the plots
 titles = [
-     "normal pulsed (longer) - normal-rms, 2 replicates, every 30 sec",
-     "normal fixed (longer) - normal-rms, 2 replicates, every 30 sec",
-     "normal mixed (longer) - normal-rms, 2 replicates, every 30 sec",
-     "normal pulsed (longer) - normal-rms, 2 replicates, every 10 sec",
-     "normal fixed (longer) - normal-rms, 2 replicates, every 10 sec",
-     "normal mixed (longer) - normal-rms, 2 replicates, every 10 sec",
-     "normal pulsed (longer) - normal-rms, 6 replicates, every 30 sec",
-     "normal fixed (longer) - normal-rms, 6 replicates, every 30 sec",
-     "normal mixed (longer) - normal-rms, 6 replicates, every 30 sec",
-     "normal pulsed (longer) - normal-rms, 6 replicates, every 10 sec",
-     "normal fixed (longer) - normal-rms, 6 replicates, every 10 sec",
-     "normal mixed (longer) - normal-rms, 6 replicates, every 10 sec"
+        "equilib, true",
+        "equilib, equilib",
+        "equilib, =1",
+        "equilib, fit",
+        "1, true",
+        "1, equilib",
+        "1, =1",
+        "1, fit",
 ]
 
 # functiion that returns a single plot
@@ -43,11 +39,12 @@ def get_plot(filename, msg):
     df['abs(lambda0)'] = (df['b0'] - df['d0']).abs()
     df['abs(lambda1)'] = (df['b1'] - df['d1']).abs()
     df['abs(h_nu)'] = df['h_nu'].abs()
+    df['f0/100'] = df['f0_init'] / 100
 
     # Melt for long format
     df_long = df.melt(
         id_vars=["Run", "Type"],
-        value_vars=["mu", "h_mu", "nu", "abs(h_nu)", "abs(lambda0)", "abs(lambda1)", "d_d0"],
+        value_vars=["mu", "h_mu", "nu", "abs(h_nu)", "abs(lambda0)", "abs(lambda1)", "d_d0", "f0/100"],
         var_name="Parameter",
         value_name="Value"
     )
@@ -61,6 +58,7 @@ def get_plot(filename, msg):
     # Build figure manually (instead of using px.box)
     fig = go.Figure()
 
+    
     for param in df_long["Parameter"].unique():
         for t in df_long["Type"].unique():
             filtered = df_long[(df_long["Parameter"] == param) & (df_long["Type"] == t)]
@@ -77,7 +75,7 @@ def get_plot(filename, msg):
             ))
 
     fig.update_layout(
-        title=f"{title} ({msg})",
+        title=f"{msg} ({filename})",
         height=400,
         xaxis_title="Parameter",
         yaxis_title="Value",

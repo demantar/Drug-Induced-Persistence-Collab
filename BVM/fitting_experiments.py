@@ -73,12 +73,34 @@ def estimation_objective(params, sim, f0_init = 10/11, version='RMS-growth', mea
 # to a simulation or experiment. It uses the l-bfgs-b minimizer
 # and does several basin hops to make sure it is not getting stuck 
 # in a local minima
-def fit_params_log_growth_pulsed(sim, param_type, n_hops=3, meas_error=0.05, liklihood_vers='RMS-growth'):
-    obj = lambda a : \
-            estimation_objective(param_type(*a), sim, version=liklihood_vers, meas_err=meas_error)
+# it also takes in a strategy to deal with the initial f0. "equilib" allways assumes
+# that it is equal to the equilibrium f0 for the parameters it is testing,
+# given takes a given f0 (for example, the true value or 1) and "fit" allows one 
+# to fit the value
+def fit_params_log_growth_pulsed(sim, param_type, n_hops=3, meas_error=0.05, liklihood_vers='RMS-growth', f0_strat="given", f0_init=10/11):
+    if f0_strat not in ["equilib", "given", "fit"]:
+        raise Exception("f0_strat not in [equilib, given, fit]")
+    if f0_strat == "given":
+        obj = lambda a : \
+                estimation_objective(param_type(*a), sim, version=liklihood_vers, 
+                                     meas_err=meas_error, f0_init=f0_init)
+    elif f0_strat == "equilib":
+        obj = lambda a : \
+                estimation_objective(param_type(*a), sim, version=liklihood_vers, 
+                                     meas_err=meas_error, f0_init=utils.equilibf0(param_type(*a)))
+    else:
+        obj = lambda a : \
+                estimation_objective(param_type(*a[:-1]), sim, version=liklihood_vers, 
+                                     meas_err=meas_error, f0_init=a[-1])
 
-    lb, ub = utils.get_bounds(param_type) # lower and upper bounds for variables
-    bounds = scipy.optimize.Bounds(lb, ub)
+    if f0_strat == "fit":
+        lb, ub = utils.get_bounds(param_type) # lower and upper bounds for variables
+        lb = lb + [0.0001]
+        ub = ub + [0.9999]
+        bounds = scipy.optimize.Bounds(lb, ub)
+    else:
+        lb, ub = utils.get_bounds(param_type) # lower and upper bounds for variables
+        bounds = scipy.optimize.Bounds(lb, ub)
 
     x0 = np.random.uniform(low=lb, high=ub) # initial guess
 
@@ -104,7 +126,12 @@ def fit_params_log_growth_pulsed(sim, param_type, n_hops=3, meas_error=0.05, lik
     )
     x = result.x
 
-    return param_type(*x)
+    if f0_strat == "fit":
+        return (param_type(*x[:-1]), x[-1])
+    elif f0_strat == "equilib": 
+        return (param_type(*x), utils.equilibf0(param_type(*x)))
+    else:
+        return (param_type(*x), f0_init)
 
 # function to plot the logarithm of the size of the simulation,
 # the deterministic simplification given true parameter def_params, 
@@ -250,50 +277,77 @@ def plot_params_fit_f0_pulsed(sim, params, def_params):
 # a function that simulates an experiment of a certain type, fits
 # parameters to the data, and prints info on how well the parameters
 # were fit compared to the old parameters
-def fit_one_tup(_, used_params, sim_type_pulsed, n_basin_hops, meas_sigma, liklihood_version="RMS-growth"):
-    sim = simulate(used_params, sim_type_pulsed, 1000, 100, meas_sigma)
-    best_params = fit_params_log_growth_pulsed(sim, type(used_params), n_basin_hops, liklihood_vers=liklihood_version,meas_error=meas_sigma)
+def fit_one_tup(_, used_params, sim_type_pulsed, n_basin_hops, meas_sigma, true_cnt, 
+                true_f0_init, liklihood_version="RMS-growth", f0_strat="true"):
+    n0 = round(true_cnt * true_f0_init)
+    n1 = true_cnt - n0
+    true_f0_init = n0 / true_cnt
+    sim = simulate(used_params, sim_type_pulsed, n0, n1, meas_sigma)
+    if f0_strat == "true":
+        best_params, f0_fit = fit_params_log_growth_pulsed(sim, type(used_params), n_basin_hops, 
+                                                   liklihood_vers=liklihood_version,
+                                                   meas_error=meas_sigma, f0_strat="given", 
+                                                   f0_init=true_f0_init)
+    elif f0_strat == "=1":
+        best_params, f0_fit = fit_params_log_growth_pulsed(sim, type(used_params), n_basin_hops, 
+                                                   liklihood_vers=liklihood_version,
+                                                   meas_error=meas_sigma, f0_strat="given", 
+                                                   f0_init=1)
+    elif f0_strat in ["equilib", "fit"]:
+        best_params, f0_fit = fit_params_log_growth_pulsed(sim, type(used_params), n_basin_hops, 
+                                                   liklihood_vers=liklihood_version,
+                                                   meas_error=meas_sigma, f0_strat=f0_strat)
+    else:
+        raise Exception("f0_strat not in [true, equilib, =1, fit]")
+
     best_fit_error = estimation_objective(best_params, sim, meas_err=meas_sigma, version=liklihood_version)
     true_fit_error = estimation_objective(used_params, sim, meas_err=meas_sigma, version=liklihood_version)
     print(f'best fit error {best_fit_error}')
     print(f'true fit error {true_fit_error}')
     print(best_params)
-    return (tuple(best_params), sim)
+    return (tuple(best_params), f0_fit, sim)
 
 # a function that simulates several experiments to better understand how
 # estimateable the parameters are.
 # note support for paralellization on multiple cores
-def run_experiment_batch(used_params, sim_type_pulsed, n_fits, paralell = True, n_basin_hops = 3, meas_sigma = 0.05, liklihood_version='RMS-growth'):
+def run_experiment_batch(used_params, sim_type_pulsed, n_experiments, true_cnt, true_f0_init, paralell = True, n_basin_hops = 3, meas_sigma = 0.05, liklihood_version='RMS-growth', f0_strat="true"):
     bound_fit = partial(
         fit_one_tup,
         used_params=used_params,
         sim_type_pulsed=sim_type_pulsed,
         n_basin_hops=n_basin_hops,
         meas_sigma=meas_sigma,
-        liklihood_version=liklihood_version
+        liklihood_version=liklihood_version,
+        true_cnt=true_cnt,
+        true_f0_init=true_f0_init,
+        f0_strat=f0_strat
     )
 
     fits = []
+    f0_fits = []
     sims = []
 
     used_param_type = type(used_params)
     if paralell: # done by ChatGPT
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            results = list(executor.map(bound_fit, [None] * n_fits))
-        fits = [used_param_type(*param_est_tuple) for param_est_tuple, _ in results]
-        sims = [sim for _, sim in results]
+            results = list(executor.map(bound_fit, [None] * n_experiments))
+        fits = [used_param_type(*param_est_tuple) for param_est_tuple, _, _ in results]
+        sims = [sim for _, _, sim in results]
+        f0_fits = [f0_fit for _, f0_fit, _ in results]
     else:
-        for i in range(n_fits):
-            param_est, sim = bound_fit(None)
+        for i in range(n_experiments):
+            param_est, f0_fit, sim = bound_fit(None)
             fits.append(param_est)
+            f0_fits.append(f0_fit)
             sims.append(sim)
     
-    return fits, sims
+    return fits, f0_fits, sims
 
 # a function that calls run_experiment_batch and saves the results in 
 # such a way that it is easy to find and work with them
-def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = True, n_basin_hops = 3, file_pref = "param_est_", meas_sigma = 0.05, message = "no_message", liklihood_vers="RMS-growth"):
-    fits, sims = run_experiment_batch(used_params, sim_type_pulsed, n_fits, paralell, n_basin_hops, meas_sigma, liklihood_version=liklihood_vers)
+def run_and_save_experiment(used_params, sim_type_pulsed, n_experiments, true_cnt, true_f0_init, paralell = True, n_basin_hops = 3, file_pref = "param_est_", meas_sigma = 0.05, message = "no_message", liklihood_vers="RMS-growth", f0_strat="true"):
+    print(f'rase true_f0_init {true_f0_init}')
+    fits, f0_fits, sims = run_experiment_batch(used_params, sim_type_pulsed, n_experiments, true_cnt, true_f0_init, paralell, n_basin_hops, meas_sigma, liklihood_version=liklihood_vers, f0_strat=f0_strat)
 
     fit_ratios = []
     for best_params, sim in zip(fits, sims):
@@ -313,6 +367,14 @@ def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = Tru
                 "Type": "Estimation"
             })
 
+    for i, f0_fit in enumerate(f0_fits):
+        data.append({
+            "Parameter": "f0_init",
+            "Value": f0_fit,
+            "Run": i,
+            "Type": "Estimation"
+        })
+
     # Add true values
     for param in used_params._fields:
         data.append({
@@ -321,6 +383,13 @@ def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = Tru
             "Run": -1,
             "Type": "True"
         })
+
+    data.append({
+        "Parameter": "f0",
+        "Value": true_f0_init,
+        "Run": -1,
+        "Type": "True"
+    })
 
     df = pd.DataFrame(data)
 
@@ -353,8 +422,10 @@ def run_and_save_experiment(used_params, sim_type_pulsed, n_fits, paralell = Tru
             f'Simulation Type: {sim_type_pulsed}\n'
             f'Liklihood version: {liklihood_vers}\n'
             f'Fit-ratios: {fit_ratios}\n'
-            f'Number of Fits: {n_fits}\n'
+            f'Number of experiments: {n_experiments}\n'
             f'Parameters: {used_params}\n'
+            f'Initial f0 strategy: {f0_strat}'
+            f'Initial cell count: {true_cnt}'
             f'Message: {message}\n'
             '---\n'
         )

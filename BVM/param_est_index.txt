@@ -1,0 +1,200 @@
+Dataframe File: param_est_1.csv
+Pickle Data File: data_1.pkl
+Time: 2025-06-03T15:46:39.415334
+Shape: (210, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementType(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.638856845304175, 0.5818112594942909, 1.1380658498381269, 0.5607698885180392, 0.8647801431786296, 0.8311758454147635, 1.0376145288017244, 1.104373803549283, 0.9545513968085478, 1.1591071946414992, 0.9313943056160858, 1.0693039079348337, 0.8787748159979494, 0.7463628374474891, 0.9126987235643669, 1.6039398602963273, 0.9737039867370995, 0.6798017482320832, 1.2534556072204237, 0.6399000420028867]
+Number of experiments: 20
+Parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Initial f0 strategy: trueInitial cell count: 1000Message: f0_init test: true = equilib, strat = true
+---
+Dataframe File: param_est_2.csv
+Pickle Data File: data_2.pkl
+Time: 2025-06-03T15:55:13.386332
+Shape: (210, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementType(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.45290811497453665, 1.197936978967191, 1.2293965546317867, 1.1454481983678682, 0.6510527591840357, 2.008363300099412, 0.7167978820327793, 1.2612470312536213, 1.7769821734018376, 1.126840976104, 1.64445524279541, 1.1185964948633453, 1.1043606382945452, 1.049191367363934, 0.8471752573851903, 0.8712737737030798, 0.9658824604428458, 1.00374500750618, 0.9778422270378895, 0.9548948710220603]
+Number of experiments: 20
+Parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Initial f0 strategy: equilibInitial cell count: 1000Message: f0_init test: true = equilib, strat = equilib
+---
+Dataframe File: param_est_3.csv
+Pickle Data File: data_3.pkl
+Time: 2025-06-03T16:04:55.169486
+Shape: (210, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementType(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [1.0021245682048638, 0.7173691903566461, 1.7166353953428413, 0.9752862200694962, 1.4732009820683036, 0.9130837711968142, 1.2321804536404266, 1.019565745304416, 1.0435797305329548, 1.482420798064295, 1.123001102977041, 1.1850550004806082, 1.4016683461737989, 1.3843038082802837, 1.3025603158844106, 1.0464119315167766, 1.0570697320167781, 0.8860147693544771, 1.0320958549153492, 1.3676761527228367]
+Number of experiments: 20
+Parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Initial f0 strategy: =1Initial cell count: 1000Message: f0_init test: true = equilib, strat = =1
+---
+Dataframe File: param_est_4.csv
+Pickle Data File: data_4.pkl
+Time: 2025-06-03T16:16:56.984952
+Shape: (210, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementType(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [1.397749226118018, 1.3760190593959392, 1.0244798213845145, 1.6017042607963274, 0.4957344999986888, 1.0286746359660641, 0.6442559000344771, 1.6343573681745105, 1.06055568022322, 1.0775737792325133, 1.0495514455163375, 1.6581752370621798, 1.1549640111628925, 1.275789526647611, 0.8124397512618451, 1.3256986686425138, 1.2237982851736098, 1.0555239060575552, 1.1612345445522079, 1.04029608635428]
+Number of experiments: 20
+Parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Initial f0 strategy: fitInitial cell count: 1000Message: f0_init test: true = equilib, strat = fit
+---
+Dataframe File: param_est_5.csv
+Pickle Data File: data_5.pkl
+Time: 2025-06-03T16:26:23.842586
+Shape: (210, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementType(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.7417965466819535, 0.9123036916873537, 0.8277429193466586, 0.8989691667867161, 0.8392674565767918, 0.9287535509035738, 0.7525556448212873, 1.1186398587779516, 0.6334763232595346, 0.7947241190612572, 0.9931382486502658, 1.2911042516667603, 1.3356713319315634, 0.851089439159546, 1.0042025000163266, 1.0084132871995186, 0.7288128055288315, 1.069028214756447, 1.4380397998192398, 1.2835979257185326]
+Number of experiments: 20
+Parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Initial f0 strategy: trueInitial cell count: 1000Message: f0_init test: true = 1, strat = true
+---
+Dataframe File: param_est_6.csv
+Pickle Data File: data_6.pkl
+Time: 2025-06-03T16:34:29.264640
+Shape: (210, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementType(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.9257145182190062, 0.9253498909662822, 1.106535683305027, 0.8636996906146941, 1.3347491283481299, 0.7154810822599993, 1.5161506507126654, 0.8666006708865391, 0.817679673183994, 0.6968088891339115, 1.0962258007299446, 0.7096927629631453, 0.27120471518549205, 0.799652735917926, 0.6104980944353606, 1.0337089972345868, 1.1028890678284275, 1.219865232369574, 1.2726086070380145, 0.698671566223422]
+Number of experiments: 20
+Parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Initial f0 strategy: equilibInitial cell count: 1000Message: f0_init test: true = 1, strat = equilib
+---
+Dataframe File: param_est_7.csv
+Pickle Data File: data_7.pkl
+Time: 2025-06-03T16:44:00.076064
+Shape: (210, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementType(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.8619698131638912, 1.3233530144160242, 1.0309367245084122, 1.1066867558108928, 0.7065265829314151, 1.4177469653681742, 1.0302147024394985, 0.9035723484812807, 1.0394681947906865, 0.8506562127519822, 0.9550955791442604, 1.4883670690272255, 0.8641759775935303, 0.9790012210344525, 0.888789911691236, 0.9844023462348956, 0.8147106101406583, 1.020212160272796, 0.8792083873209984, 1.0728544366003114]
+Number of experiments: 20
+Parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Initial f0 strategy: =1Initial cell count: 1000Message: f0_init test: true = 1, strat = =1
+---
+Dataframe File: param_est_8.csv
+Pickle Data File: data_8.pkl
+Time: 2025-06-03T16:56:10.111782
+Shape: (210, 4)
+Columns: ['Parameter', 'Value', 'Run', 'Type']
+Simulation Type: MeasurementType(change_times=[0, 150], meas_times=[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300], doses=array([[  1,   0],
+       [  1,   0],
+       [  5,   0],
+       [  5,   0],
+       [ 10,   0],
+       [ 10,   0],
+       [ 20,   0],
+       [ 20,   0],
+       [ 50,   0],
+       [ 50,   0],
+       [ 75,   0],
+       [ 75,   0],
+       [100,   0],
+       [100,   0]]))
+Liklihood version: RMS-growth
+Fit-ratios: [0.8629522722322608, 0.8958811150160998, 0.9638223055476106, 0.6285151822976428, 0.8621775153834857, 0.788840651566705, 0.7863766380551911, 1.31432073316447, 0.6352633006519932, 0.5711031242904392, 1.074346101422992, 1.020521698585406, 0.8997061882185095, 1.3760593820453306, 1.0546896399387535, 0.6167751221467944, 0.9447590699592279, 1.0180635479414268, 0.593371557076957, 0.9000155029280577]
+Number of experiments: 20
+Parameters: LastYearParamSetLinear(mu=0.0004, h_mu=4e-05, nu=0.004, h_nu=-4e-05, b0=0.04, d0=0.0, d_d0=0.08, b1=0.001, d1=0.0)
+Initial f0 strategy: fitInitial cell count: 1000Message: f0_init test: true = 1, strat = fit
+---

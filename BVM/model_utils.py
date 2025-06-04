@@ -57,6 +57,7 @@ def get_bounds(param_type):
     if param_type is LastYearParamSetLinear_no_h_nu:
         return ([0.0] * 8,
                 [0.1] * 8)
+    raise Exception("parameter regime does not have bounds")
 
 
 # The following namedtuples are 'datatypes' to store types of experiments
@@ -105,6 +106,16 @@ def calc_meas_mat(meas_type_pulsed, params, f0_init, n0):
             dose_result.append(np.sum(n, axis=None))
         results.append(dose_result)
     return Measurement(meas_type_pulsed, np.array(results))
+
+# a function that returns the equilibrium f0 for a given fixed parameter set
+def equilibf0(params):
+    A = inf_gen_mat(params)
+    # ChatGPT code to find dominant left eigenvector
+    eigvals, eigvecs = np.linalg.eig(A.T)
+    dominant_idx = np.argmax(eigvals) # TODO: shouold we have absolute value within?
+    dominant_left_eigvec = eigvecs[:, dominant_idx]
+    dominant_left_eigvec = dominant_left_eigvec[0] / np.sum(dominant_left_eigvec)
+    return dominant_left_eigvec
 
             
 # A function that takes in a FixedParamSet and returns the derivative of 
