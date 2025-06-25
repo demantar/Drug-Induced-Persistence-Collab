@@ -12,10 +12,16 @@ import math
 #  centered at zero with std deviation rel_meas_error)
 def simulate(par, meas_type, z0, z1, rel_meas_error=0.0):
     data = []
+    z0_hist = []
+    z1_hist = []
     for schedule in meas_type.doses:
-        data.append(simulate_one_schedule(par, meas_type.change_times, meas_type.meas_times, schedule, 
-                                     z0, z1, rel_meas_error))
-    return utils.Measurement(meas_type, np.array(data))
+        s_data, (s_z0_hist, s_z1_hist) = simulate_one_schedule(par, meas_type.change_times, 
+                                                     meas_type.meas_times, schedule, 
+                                                     z0, z1, rel_meas_error)
+        data.append(s_data)
+        z0_hist.append(s_z0_hist)
+        z1_hist.append(s_z1_hist)
+    return utils.Measurement(meas_type, np.array(data)), (np.array(z0_hist), np.array(z1_hist))
     
 
 # helper function that simulates using a given dosage schedule
@@ -25,11 +31,15 @@ def simulate_one_schedule(par, change_times, meas_times, doses, z0, z1, rel_meas
     meas_time_ind = 0
     change_time_ind = 0
     res = []
-    while meas_time_ind < len(meas_times) and z0 + z1 > 0: # TODO: what if z0 + z1 == 0
+    z0_hist = []
+    z1_hist = []
+    while meas_time_ind < len(meas_times) and 0 < z0+z1 and z0+z1 < 1000000:
         if t >= meas_times[meas_time_ind]:
             res.append((z0 + z1) * 
                        math.exp(random.gauss(mu=0, 
                                              sigma=rel_meas_error)))
+            z0_hist.append(z0)
+            z1_hist.append(z1)
             meas_time_ind += 1
 
         # calculate the rate of events of each type of cells
@@ -68,7 +78,13 @@ def simulate_one_schedule(par, change_times, meas_times, doses, z0, z1, rel_meas
             else:
                 z1 -= 1 # change type
                 z0 += 1
-    return res
+
+    while meas_time_ind < len(meas_times):
+        res.append(-1)
+        z0_hist.append(0)
+        z1_hist.append(0)
+        meas_time_ind += 1
+    return res, (z0_hist, z1_hist)
 
 
 

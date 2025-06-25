@@ -1,5 +1,5 @@
 # short script to plot a single experment from a pkl file
-import fitting_experiments
+import fitting_plots
 import model_utils as utils
 import pickle
 import sys
@@ -15,6 +15,7 @@ else:
 
 with open(file, 'rb') as f:
     fits, sims, used_params = pickle.load(f)
-    fitting_experiments.plot_params_fit_log_growth_pulsed(sims[run], fits[run], used_params)
-    fitting_experiments.plot_params_fit_f0_pulsed(sims[run], fits[run], used_params)
-    fitting_experiments.plot_params_fit_log_growth_pulsed_diff(sims[run], fits[run], used_params)
+    # WARNING: correct f0_init should be supplied for correct plot
+    #fitting_plots.plot_params_fit_log_growth_pulsed(sims[run], fits[run], used_params, f0_init=0.99)
+    fitting_plots.plot_params_fit_f0_pulsed(sims[run], fits[run], used_params, f0_init=0.99)
+    #fitting_plots.plot_params_fit_log_growth_pulsed_diff(sims[run], fits[run], used_params, f0_init=0.99)

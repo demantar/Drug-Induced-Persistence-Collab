@@ -1,32 +1,48 @@
 # File for plotting the fitting plots resulting from the simulations
 # NOTE: a lot of the plotting is written by ChatGPT (under superivsion)
 import pandas as pd
-import plotly.express as px
-import numpy as np
 import chart_studio.plotly as py
 import chart_studio.tools as tls
 import plotly.graph_objects as go
-import sys
+import os
 
 # whether to upload the plots into the cloud or simply display them
-use_plotly_cloud = False
+display_method = "browser"
+save_dir = "figure_pngs"
+assert display_method in ["browser", "save to png", "upload to plotly"]
 
-if use_plotly_cloud:
+if display_method == "uploaed to plotly":
     tls.set_credentials_file(username='', api_key='') # change these to use cloud
 
 # names of csv files to plot
-filenames = [f"param_est_{i}.csv" for i in range(1, 8 + 8)]
+filenames = [f"param_est_{i}.csv" for i in range(1, 22 + 1)]
 
 # corresponding titles of the plots
 titles = [
-        "equilib, true",
-        "equilib, equilib",
-        "equilib, =1",
-        "equilib, fit",
-        "1, true",
-        "1, equilib",
-        "1, =1",
-        "1, fit",
+    "1_1.   T = 120 hrs (5 days), D = [0, 1, 5, 10, 50, 100].",
+    "1_2.   T = 120 hrs, D = [0, 0.01, 0.1, 1, 10, 100].",
+    "1_3.   T = 120 hrs, D = [0, 0.01, 0.05, 0.1, 0.5, 1].",
+    "1_4.   T = 336 hrs (14 days), D = [0, 1, 5, 10, 50, 100].",
+    "1_5.   T = 336 hrs, D = [0, 0.01, 0.1, 1, 10, 100].",
+    "1_6.   T = 336 hrs, D =  [0, 0.01, 0.05, 0.1, 0.5, 1].",
+
+    "2_1.   T = 240 hrs (10 days), continuous exposure, D = [0, 1, 5, 10, 50, 100].",
+    "2_2.   T = 240 hrs, continuous exposure, D = [0, 0.01, 0.1, 1, 10, 100].",
+    "2_3.   T = 240 hrs, intermittent (5+5), D =  [0, 1, 5, 10, 50, 100].",
+    "2_4.   T = 240 hrs, intermittent (5+5), D = [0, 0.01, 0.1, 1, 10, 100].",
+    "2_5.   T = 480 hrs (20 days), continuous exposure, D =  [0, 1, 5, 10, 50, 100].",
+    "2_6.   T = 480 hrs, continuous exposure, D = [0, 0.01, 0.1, 1, 10, 100].",
+    "2_7.   T = 480 hrs, intermittent (5+5+5+5), D = [0, 1, 5, 10, 50, 100].",
+    "2_8.   T = 480 hrs, intermittent (5+5+5+5), D = [0, 0.01, 0.1, 1, 10, 100].",
+
+    "3_1.   T = 240 hrs, D = [0, 1, 5, 10, 50, 100], no measurement error.",
+    "3_2.   T = 240 hrs, D = [0, 1, 2, 5, 10, 20, 50, 75, 100], no measurement error.",
+    "3_3.   T = 240 hrs, D = [0, 1, 5, 10, 50, 100], with measurement error.",
+    "3_4.   T = 240 hrs, D = [0, 1, 2, 5, 10, 20, 50, 75, 100], with measurement error.",
+    "3_5.   T = 480 hrs, D = [0, 1, 5, 10, 50, 100], no measurement error.",
+    "3_6.   T = 480 hrs, D = [0, 1, 2, 5, 10, 20, 50, 75, 100], no measurement error.",
+    "3_7.   T = 480 hrs, D = [0, 1, 5, 10, 50, 100], with measurement error.",
+    "3_8.   T = 480 hrs, D = [0, 1, 2, 5, 10, 20, 50, 75, 100], with measurement error.",
 ]
 
 # functiion that returns a single plot
@@ -37,14 +53,15 @@ def get_plot(filename, msg):
 
     # Derived parameters
     df['abs(lambda0)'] = (df['b0'] - df['d0']).abs()
-    df['abs(lambda1)'] = (df['b1'] - df['d1']).abs()
-    df['abs(h_nu)'] = df['h_nu'].abs()
+    df['abs(lambda1)'] = (df['b1'] - df['d1'])#.abs()
+    df['abs(lambda1 - nu)'] = (df['b1'] - df['d1'] - df['nu']).abs()
+    #df['abs(h_nu)'] = df['h_nu'].abs()
     df['f0/100'] = df['f0_init'] / 100
 
     # Melt for long format
     df_long = df.melt(
         id_vars=["Run", "Type"],
-        value_vars=["mu", "h_mu", "nu", "abs(h_nu)", "abs(lambda0)", "abs(lambda1)", "d_d0", "f0/100"],
+        value_vars=["mu", "h_mu", "nu", "abs(lambda0)", "abs(lambda1)", "d_d0", "f0/100", "abs(lambda1 - nu)"],
         var_name="Parameter",
         value_name="Value"
     )
@@ -58,13 +75,28 @@ def get_plot(filename, msg):
     # Build figure manually (instead of using px.box)
     fig = go.Figure()
 
+    # display names (for latex)
+    var_to_disp_name = {
+        'mu': r'$\mu$',
+        'h_mu': r'$h_\mu$',
+        'nu': r'$\nu$',
+        'abs(lambda0)': r'$\lvert \lambda_0 \rvert$',
+        'abs(lambda1)': r'$\lvert \lambda_1 \rvert$',
+        'd_d0': r'$\Delta d_0$',
+        'f0/100': r'$f_0/100$',
+        'abs(lambda1 - nu)': r'$\lvert \lambda_1  - \nu\rvert$'
+    }
     
     for param in df_long["Parameter"].unique():
+        if param in var_to_disp_name:
+            disp_name = var_to_disp_name[param]
+        else:
+            disp_name = param
         for t in df_long["Type"].unique():
             filtered = df_long[(df_long["Parameter"] == param) & (df_long["Type"] == t)]
             fig.add_trace(go.Box(
                 y=filtered["Value"].tolist(),
-                x=[param] * len(filtered),
+                x=[disp_name] * len(filtered),
                 boxpoints="all",
                 jitter=0.5,
                 pointpos=-1.8,
@@ -83,16 +115,28 @@ def get_plot(filename, msg):
         template="plotly"  # ensure compatibility
     )
 
-    fig.update_yaxes(type="log", range=[-7, -0.5])
+    logarithmic_axis = True
+    
+    if logarithmic_axis:
+        fig.update_yaxes(type="log", range=[-7, -0.5])
+    else:
+        fig.update_yaxes(range=[-9, 0])
 
     return fig
 
+if display_method == "save to png":
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
 
 for filename, title in zip(filenames, titles):
     fig = get_plot(filename, title)
-    if use_plotly_cloud:
+    if display_method == "upload to plotly":
         py.plot(fig, filename=title, auto_open=False)
-    else: 
+    elif display_method == "browser": 
         fig.show()
+    elif display_method == "save to png":
+        fig.write_image(f"{save_dir}/{title}.png")
+    else:
+        raise Exception("invalid/no display method")
 
 

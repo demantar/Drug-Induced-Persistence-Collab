@@ -30,7 +30,7 @@ lin_param_default = utils.LastYearParamSetLinear(
 )
 
 # test one simulation
-sim_pulsed = simulate(lin_param_default, sim_type, 1000, 100, rel_meas_error=0.05)
+sim_pulsed, _ = simulate(lin_param_default, sim_type, 1000, 100, rel_meas_error=0.05)
 print(sim_pulsed)
 
 # CHATGPT -- BEGIN
@@ -62,12 +62,12 @@ fig_pulsed = go.Figure()
 
 # Note: the code for the following plots was partially written by ChatGPT
 sim_type = utils.MeasurementType(
-    change_times = [0, 20, 40, 60, 80, 100],
-    meas_times = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-    doses = np.array([[50, 0, 50, 0, 50, 0]])
+    change_times = [0],
+    meas_times = [k for k in range(100)],
+    doses = np.array([[0]])
 )
 for i in range(1000):
-    sim1 = simulate(lin_param_default, sim_type, 1000, 100, rel_meas_error=0.05)
+    sim1, _ = simulate(lin_param_default, sim_type, 1000, 100, rel_meas_error=0.00)
     fig_pulsed.add_trace(go.Scatter(
         x= sim_type.meas_times,
         y= np.log(sim1.data[0]),
@@ -77,7 +77,7 @@ for i in range(1000):
     ))
 
 for i in range(6):
-    sim1 = simulate(lin_param_default, sim_type, 1000, 100, rel_meas_error=0.05)
+    sim1, _ = simulate(lin_param_default, sim_type, 1000, 100, rel_meas_error=0.00)
     fig_pulsed.add_trace(go.Scatter(
         x= sim_type.meas_times,
         y= np.log(sim1.data[0]),
@@ -90,7 +90,7 @@ doses = np.array([0] + list(sim_type.doses[0]))
 c_t = lambda t: doses[np.searchsorted(sim_type.change_times, t, side="right")]
 eval_times = np.linspace(0, 100, 100)
 f0 = utils.sol_f0(lin_param_default, c_t, eval_times, 10 / 11)
-growth = np.log(utils.calc_meas_mat(sim_type, lin_param_default, 10/11, 1100).data[0])
+growth = np.log(utils.calc_meas_mat(sim_type, lin_param_default, 10/11, np.array([1100])).data[0])
 fig_pulsed.add_trace(go.Scatter(
     x= sim_type.meas_times,
     y= growth ,
@@ -99,7 +99,7 @@ fig_pulsed.add_trace(go.Scatter(
     opacity=1  # Low opacity for blending
 ))
 
-sim1 = simulate(lin_param_default, sim_type, 1000, 100, rel_meas_error=0.05)
+sim1, _ = simulate(lin_param_default, sim_type, 1000, 100, rel_meas_error=0.00)
 fig_pulsed.add_trace(go.Scatter(
     x= sim_type.meas_times,
     y= np.log(sim1.data[0]),

@@ -5,6 +5,8 @@ from collections import namedtuple
 import numpy as np
 import scipy.integrate
 import scipy.linalg
+import math
+import random 
 
 # 'datatype' for efficiently storing model parameters
 # in the case where the parameters do not depend on the dose
@@ -20,7 +22,11 @@ FundamentalParamSet = namedtuple('FundamentalParamSet', 'mu nu b0 d0 b1 d1')
 # Linear model from last summer article. Note that h_mu = k and h_nu = -m
 LastYearParamSetLinear = namedtuple('LastYearParamSetLinear', 
                         'mu h_mu nu h_nu b0 d0 d_d0 b1 d1')
+LastYearParamSetLinear_logged = namedtuple('LastYearParamSetLinear_logged', 
+                        'mu h_mu nu h_nu b0 d0 d_d0 b1 d1')
 LastYearParamSetLinear_no_h_nu = namedtuple('LastYearParamSetLinear_no_h_nu', 
+                        'mu h_mu nu b0 d0 d_d0 b1 d1')
+LastYearParamSetLinear_no_h_nu_logged = namedtuple('LastYearParamSetLinear_no_h_nu_logged', 
                         'mu h_mu nu b0 d0 d_d0 b1 d1')
 
 # function that takes a prameter set par and a dose c and returns a fundamental
@@ -37,6 +43,15 @@ def get_fund_param_set(par, c):
                 par.b1,
                 par.d1
         )
+    if isinstance(par, LastYearParamSetLinear_logged):
+        return FundamentalParamSet(
+                np.exp(par.mu) + np.exp(par.h_mu) * c, 
+                np.maximum(np.exp(par.nu) - np.exp(par.h_nu) * c, 0), 
+                np.exp(par.b0), 
+                np.exp(par.d0) + np.exp(par.d_d0) * c / (c + 1), 
+                np.exp(par.b1),
+                np.exp(par.d1)
+        )
     if isinstance(par, LastYearParamSetLinear_no_h_nu):
         return FundamentalParamSet(
                 par.mu + par.h_mu * c, 
@@ -46,6 +61,16 @@ def get_fund_param_set(par, c):
                 par.b1,
                 par.d1
         )
+    if isinstance(par, LastYearParamSetLinear_no_h_nu_logged):
+        return FundamentalParamSet(
+                np.exp(par.mu) + np.exp(par.h_mu) * c, 
+                np.maximum(np.exp(par.nu), 0),
+                np.exp(par.b0), 
+                np.exp(par.d0) + np.exp(par.d_d0) * c / (c + 1), 
+                np.exp(par.b1),
+                np.exp(par.d1)
+        )
+    raise Exception("parameter regime does not have get_fund_param_set implementation")
 
 # a function that takes a parameter set type and returns bounds
 # for the parameter. The fist list in the tuple is the lower bound
@@ -54,9 +79,15 @@ def get_bounds(param_type):
     if param_type is LastYearParamSetLinear:
         return ([0.0] * 3 + [-0.1] + [0.0] * 5,
                 [0.1] * 3 + [0.0] + [0.1] * 5)
+    if param_type is LastYearParamSetLinear_logged:
+        return ([math.log(1e-8)] * 9,
+                [math.log(1e-1)] * 9)
     if param_type is LastYearParamSetLinear_no_h_nu:
         return ([0.0] * 8,
                 [0.1] * 8)
+    if param_type is LastYearParamSetLinear_no_h_nu_logged:
+        return ([math.log(1e-8)] * 8,
+                [math.log(1e-1)] * 8)
     raise Exception("parameter regime does not have bounds")
 
 
@@ -82,11 +113,12 @@ def inf_gen_mat(par):
 # A function that takes a measurment type and generates a percise measurement
 # of the cell count assuming the deterministic simplification
 # (the ODE) via matrix exponentiation
-def calc_meas_mat(meas_type_pulsed, params, f0_init, n0):
+# takes list n0 of initial sizes
+def calc_meas_mat(meas_type_pulsed, params, f0_init, n0, meas_sigma=0.0):
     results = []
-    for dose_sched in meas_type_pulsed.doses: # iterate through each tumor
+    for i_sched, dose_sched in enumerate(meas_type_pulsed.doses): # iterate through each tumor
         dose_result = []
-        n = np.array([[f0_init, 1 - f0_init]]) * n0
+        n = np.array([[f0_init, 1 - f0_init]]) * n0[i_sched]
         i_change = 0
         t_curr = 0
         # iterate through all measurement times
@@ -103,7 +135,8 @@ def calc_meas_mat(meas_type_pulsed, params, f0_init, n0):
             par_fix = get_fund_param_set(params, dose_sched[i_change])
             n = n @ scipy.linalg.expm((t_nxt - t_curr) * inf_gen_mat(par_fix)) 
             t_curr = t_nxt
-            dose_result.append(np.sum(n, axis=None))
+            dose_result.append(np.sum(n, axis=None) * 
+                               math.exp(random.gauss(mu=0, sigma=meas_sigma)))
         results.append(dose_result)
     return Measurement(meas_type_pulsed, np.array(results))
 
@@ -114,6 +147,9 @@ def equilibf0(params):
     eigvals, eigvecs = np.linalg.eig(A.T)
     dominant_idx = np.argmax(eigvals) # TODO: shouold we have absolute value within?
     dominant_left_eigvec = eigvecs[:, dominant_idx]
+    print(A.T)
+    print(np.linalg.eig(A.T))
+    print(dominant_left_eigvec)
     dominant_left_eigvec = dominant_left_eigvec[0] / np.sum(dominant_left_eigvec)
     return dominant_left_eigvec
 
