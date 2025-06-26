@@ -15,11 +15,12 @@ if display_method == "uploaed to plotly":
     tls.set_credentials_file(username='', api_key='') # change these to use cloud
 
 # names of csv files to plot
-filenames = [f"param_est_{i}.csv" for i in range(7, 7 + 1)]
+filenames = [f"param_est_{i}.csv" for i in [2, 4]]
 
 # corresponding titles of the plots
 titles = [
-    "michaelis medten function",
+        "linear mu, const dose",
+        "linear mu, pulsed dose",
 ]
 
 # functiion that returns a single plot
@@ -38,8 +39,8 @@ def get_plot(filename, msg):
     # Melt for long format
     df_long = df.melt(
         id_vars=["Run", "Type"],
-        #value_vars=["mu", "h_mu", "nu", "abs(lambda0)", "abs(lambda1)", "d_d0", "f0/100", "abs(lambda1 - nu)"],
-        value_vars=["mu", "d_mu", "e_mu", "nu", "abs(lambda0)", "abs(lambda1)", "d_d0", "f0/100", "abs(lambda1 - nu)"],
+        value_vars=["mu", "h_mu", "nu", "abs(lambda0)", "abs(lambda1)", "d_d0", "f0/100", "abs(lambda1 - nu)"],
+        #value_vars=["mu", "d_mu", "e_mu", "nu", "abs(lambda0)", "abs(lambda1)", "d_d0", "f0/100", "abs(lambda1 - nu)"],
         var_name="Parameter",
         value_name="Value"
     )
@@ -56,9 +57,9 @@ def get_plot(filename, msg):
     # display names (for latex)
     var_to_disp_name = {
         'mu': r'$\mu$',
-        #'h_mu': r'$h_\mu$',
-        'd_mu': r'$\Delta \mu$',
-        'e_mu': r'$E_\mu$',
+        'h_mu': r'$h_\mu$',
+        #'d_mu': r'$\Delta \mu$',
+        #'e_mu': r'$E_\mu$',
         'nu': r'$\nu$',
         'abs(lambda0)': r'$\lvert \lambda_0 \rvert$',
         'abs(lambda1)': r'$\lvert \lambda_1 \rvert$',

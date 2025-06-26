@@ -2,7 +2,7 @@
 import model_utils as utils
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
-from typing import ClassVar, Sequence
+from typing import ClassVar, Sequence, Tuple
 import random
 import scipy.optimize
 import numpy as np
@@ -16,19 +16,25 @@ class LongTermStrategy(ABC):
     no_params: int
 
     @abstractmethod
-    def get_rate(self, strategy_params: Sequence[float], model_params) -> float:
+    def get_rate(self, strategy_params: Sequence[float], model_params) -> Tuple[float, float]:
         """
         Get the long term growth rate given certain 
-        strategy parameters and model parameters
+        strategy parameters and model parameters.
+        Also returns the f0 in which the strategy behaves optimally.
         """
         pass
 
-    def optimize_rate(self, model_params) -> tuple[float, Sequence[float]]:
+    def optimize_rate(self, model_params) -> Tuple[float, Sequence[float], float]:
         """
         Find the strategy parameters that minimize 
-        get_rate given specific model parameters
+        get_rate given specific model parameters.
+        Returns a tuple with:
+            - the long term rate
+            - the paraeters that achieve the rate
+            - the equilibrium f0 under the strategy
         """
-        obj = lambda strategy_params: self.get_rate(strategy_params, model_params)
+        obj = lambda strategy_params: self.get_rate(strategy_params, model_params)[0]
+
         x0 = [random.uniform(lo, hi) for lo, hi in self.param_bounds]
         res = scipy.optimize.minimize(
             obj, 
@@ -44,7 +50,10 @@ class LongTermStrategy(ABC):
 
         if not res.success:
             print(f"Strategy optimization: {res.message}")
-        return res.fun, res.x
+
+        rate, f0_inf = self.get_rate(res.x, model_params)
+
+        return rate, res.x, f0_inf
         
 @dataclass(slots=True)
 class FixedDose(LongTermStrategy):
@@ -55,11 +64,11 @@ class FixedDose(LongTermStrategy):
     no_params: int = 1
     param_names: list[str] = field(default_factory=lambda: ['c'])
 
-    def get_rate(self, strategy_params: Sequence[float], model_params) -> float:
+    def get_rate(self, strategy_params: Sequence[float], model_params) -> Tuple[float, float]:
         c = strategy_params[0]
         params = utils.get_fund_param_set(model_params, c)
-        _, rate = utils.calc_equilib(params)
-        return rate
+        f0_inf, rate = utils.calc_equilib(params)
+        return rate, f0_inf[0]
         
 @dataclass(slots=True)
 class RapidOnOffPulse(LongTermStrategy):
@@ -72,7 +81,7 @@ class RapidOnOffPulse(LongTermStrategy):
     no_params: int = 2
     param_names: list[str] = field(default_factory=lambda: ['c', 'phi'])
 
-    def get_rate(self, strategy_params: Sequence[float], model_params) -> float:
+    def get_rate(self, strategy_params: Sequence[float], model_params) -> Tuple[float, float]:
         c = strategy_params[0]
         phi = strategy_params[1]
         params_on = utils.get_fund_param_set(model_params, c)
@@ -82,46 +91,7 @@ class RapidOnOffPulse(LongTermStrategy):
               for p_on, p_off 
               in zip(params_on, params_off))
         )
-        _, rate = utils.calc_equilib(params_comb)
-        return rate
-
-if __name__ == '__main__':
-    print("test output for treatment_optimization")
-    strat_fixed = FixedDose(param_bounds=[(0, 100)])
-    strat_pulsed = RapidOnOffPulse(param_bounds=[(0, 100), (0, 1)])
-    
-    new_param_test = utils.ParamSet_MMmu(
-        mu = 0.0004,
-        d_mu = 0.004,
-        e_mu = 10.0,
-        nu = 0.004,
-        b0 = 0.04,
-        d0 = 0,
-        d_d0 = 0.08,
-        b1 = 0.001,
-        d1 = 0
-    )
-
-    print("testing fixed dose strategies")
-    strat = strat_fixed
-    opt_f, opt_x = strat.optimize_rate(new_param_test)
-    print(f'opt_f: {opt_f}, opt_x: {opt_x}')
-    doses = np.linspace(0, 100, 300)
-    rate_arr = [strat.get_rate([c], new_param_test) for c in doses]
-    fig = px.line(x = doses, y = rate_arr)
-    fig.show()
-
-    print("testing pulsed strategies")
-    strat = strat_pulsed
-    opt_f, opt_x = strat.optimize_rate(new_param_test)
-    print(f'opt_f: {opt_f}, opt_x: {opt_x}')
-    doses = np.linspace(0, 100, 300)
-    rate_arr_c = [strat.get_rate([c, opt_x[1]], new_param_test) for c in doses]
-    fig = px.line(x = doses, y = rate_arr_c)
-    fig.show()
-    ratios = np.linspace(0, 1, 100)
-    rate_arr_phi = [strat.get_rate([opt_x[0], phi], new_param_test) for phi in ratios]
-    fig = px.line(x = ratios, y = rate_arr_phi)
-    fig.show()
+        f0_inf, rate = utils.calc_equilib(params_comb)
+        return rate, f0_inf[0]
 
 
