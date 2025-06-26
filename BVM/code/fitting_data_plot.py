@@ -15,34 +15,11 @@ if display_method == "uploaed to plotly":
     tls.set_credentials_file(username='', api_key='') # change these to use cloud
 
 # names of csv files to plot
-filenames = [f"param_est_{i}.csv" for i in range(1, 22 + 1)]
+filenames = [f"param_est_{i}.csv" for i in range(7, 7 + 1)]
 
 # corresponding titles of the plots
 titles = [
-    "1_1.   T = 120 hrs (5 days), D = [0, 1, 5, 10, 50, 100].",
-    "1_2.   T = 120 hrs, D = [0, 0.01, 0.1, 1, 10, 100].",
-    "1_3.   T = 120 hrs, D = [0, 0.01, 0.05, 0.1, 0.5, 1].",
-    "1_4.   T = 336 hrs (14 days), D = [0, 1, 5, 10, 50, 100].",
-    "1_5.   T = 336 hrs, D = [0, 0.01, 0.1, 1, 10, 100].",
-    "1_6.   T = 336 hrs, D =  [0, 0.01, 0.05, 0.1, 0.5, 1].",
-
-    "2_1.   T = 240 hrs (10 days), continuous exposure, D = [0, 1, 5, 10, 50, 100].",
-    "2_2.   T = 240 hrs, continuous exposure, D = [0, 0.01, 0.1, 1, 10, 100].",
-    "2_3.   T = 240 hrs, intermittent (5+5), D =  [0, 1, 5, 10, 50, 100].",
-    "2_4.   T = 240 hrs, intermittent (5+5), D = [0, 0.01, 0.1, 1, 10, 100].",
-    "2_5.   T = 480 hrs (20 days), continuous exposure, D =  [0, 1, 5, 10, 50, 100].",
-    "2_6.   T = 480 hrs, continuous exposure, D = [0, 0.01, 0.1, 1, 10, 100].",
-    "2_7.   T = 480 hrs, intermittent (5+5+5+5), D = [0, 1, 5, 10, 50, 100].",
-    "2_8.   T = 480 hrs, intermittent (5+5+5+5), D = [0, 0.01, 0.1, 1, 10, 100].",
-
-    "3_1.   T = 240 hrs, D = [0, 1, 5, 10, 50, 100], no measurement error.",
-    "3_2.   T = 240 hrs, D = [0, 1, 2, 5, 10, 20, 50, 75, 100], no measurement error.",
-    "3_3.   T = 240 hrs, D = [0, 1, 5, 10, 50, 100], with measurement error.",
-    "3_4.   T = 240 hrs, D = [0, 1, 2, 5, 10, 20, 50, 75, 100], with measurement error.",
-    "3_5.   T = 480 hrs, D = [0, 1, 5, 10, 50, 100], no measurement error.",
-    "3_6.   T = 480 hrs, D = [0, 1, 2, 5, 10, 20, 50, 75, 100], no measurement error.",
-    "3_7.   T = 480 hrs, D = [0, 1, 5, 10, 50, 100], with measurement error.",
-    "3_8.   T = 480 hrs, D = [0, 1, 2, 5, 10, 20, 50, 75, 100], with measurement error.",
+    "michaelis medten function",
 ]
 
 # functiion that returns a single plot
@@ -61,7 +38,8 @@ def get_plot(filename, msg):
     # Melt for long format
     df_long = df.melt(
         id_vars=["Run", "Type"],
-        value_vars=["mu", "h_mu", "nu", "abs(lambda0)", "abs(lambda1)", "d_d0", "f0/100", "abs(lambda1 - nu)"],
+        #value_vars=["mu", "h_mu", "nu", "abs(lambda0)", "abs(lambda1)", "d_d0", "f0/100", "abs(lambda1 - nu)"],
+        value_vars=["mu", "d_mu", "e_mu", "nu", "abs(lambda0)", "abs(lambda1)", "d_d0", "f0/100", "abs(lambda1 - nu)"],
         var_name="Parameter",
         value_name="Value"
     )
@@ -78,7 +56,9 @@ def get_plot(filename, msg):
     # display names (for latex)
     var_to_disp_name = {
         'mu': r'$\mu$',
-        'h_mu': r'$h_\mu$',
+        #'h_mu': r'$h_\mu$',
+        'd_mu': r'$\Delta \mu$',
+        'e_mu': r'$E_\mu$',
         'nu': r'$\nu$',
         'abs(lambda0)': r'$\lvert \lambda_0 \rvert$',
         'abs(lambda1)': r'$\lvert \lambda_1 \rvert$',
@@ -118,9 +98,9 @@ def get_plot(filename, msg):
     logarithmic_axis = True
     
     if logarithmic_axis:
-        fig.update_yaxes(type="log", range=[-7, -0.5])
+        fig.update_yaxes(type="log", range=[-9, 2])
     else:
-        fig.update_yaxes(range=[-9, 0])
+        fig.update_yaxes(range=[-9, 2])
 
     return fig
 

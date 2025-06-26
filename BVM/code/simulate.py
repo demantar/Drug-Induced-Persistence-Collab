@@ -80,9 +80,9 @@ def simulate_one_schedule(par, change_times, meas_times, doses, z0, z1, rel_meas
                 z0 += 1
 
     while meas_time_ind < len(meas_times):
-        res.append(-1)
-        z0_hist.append(0)
-        z1_hist.append(0)
+        res.append(-1) # represents no measurement
+        z0_hist.append(-1)
+        z1_hist.append(-1)
         meas_time_ind += 1
     return res, (z0_hist, z1_hist)
 

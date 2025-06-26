@@ -29,6 +29,10 @@ LastYearParamSetLinear_no_h_nu = namedtuple('LastYearParamSetLinear_no_h_nu',
 LastYearParamSetLinear_no_h_nu_logged = namedtuple('LastYearParamSetLinear_no_h_nu_logged', 
                         'mu h_mu nu b0 d0 d_d0 b1 d1')
 
+# model with more general function for mu
+ParamSet_MMmu = namedtuple('ParamSet_MMmu', 
+                             'mu d_mu e_mu nu b0 d0 d_d0 b1 d1')
+
 # function that takes a prameter set par and a dose c and returns a fundamental
 # parameter set for that dose
 # in some places, they have been made positive and other formulas adjusted
@@ -70,6 +74,15 @@ def get_fund_param_set(par, c):
                 np.exp(par.b1),
                 np.exp(par.d1)
         )
+    if isinstance(par, ParamSet_MMmu):
+        return FundamentalParamSet(
+                par.mu + par.d_mu * c / (c + par.e_mu), 
+                par.nu, 
+                par.b0, 
+                par.d0 + par.d_d0 * c / (c + 1), 
+                par.b1,
+                par.d1
+        )
     raise Exception("parameter regime does not have get_fund_param_set implementation")
 
 # a function that takes a parameter set type and returns bounds
@@ -88,6 +101,9 @@ def get_bounds(param_type):
     if param_type is LastYearParamSetLinear_no_h_nu_logged:
         return ([math.log(1e-8)] * 8,
                 [math.log(1e-1)] * 8)
+    if param_type is ParamSet_MMmu:
+        return ([0.0] * 2 + [0.01] + [0.0] * 6,
+                [0.1] * 2 + [100] + [0.1] * 6)
     raise Exception("parameter regime does not have bounds")
 
 
@@ -101,6 +117,7 @@ def get_bounds(param_type):
 MeasurementType = namedtuple('MeasurementType', 
                                    'change_times meas_times doses')
 # A tuple to store the results of a measurement / simulation
+# The number -1 represents no-data / invalid data
 Measurement = namedtuple('Measurement', 'type data')
 
 # A function that takes FixedParamSet and returns the infinatesimal generator matrix
@@ -141,18 +158,24 @@ def calc_meas_mat(meas_type_pulsed, params, f0_init, n0, meas_sigma=0.0):
     return Measurement(meas_type_pulsed, np.array(results))
 
 # a function that returns the equilibrium f0 for a given fixed parameter set
-def equilibf0(params):
+def equilibf0(params): # TODO: replace by calc_equilib in other places
     A = inf_gen_mat(params)
     # ChatGPT code to find dominant left eigenvector
     eigvals, eigvecs = np.linalg.eig(A.T)
     dominant_idx = np.argmax(eigvals) # TODO: shouold we have absolute value within?
     dominant_left_eigvec = eigvecs[:, dominant_idx]
-    print(A.T)
-    print(np.linalg.eig(A.T))
-    print(dominant_left_eigvec)
     dominant_left_eigvec = dominant_left_eigvec[0] / np.sum(dominant_left_eigvec)
     return dominant_left_eigvec
 
+# returns equilibrium ratio and rate
+def calc_equilib(params):
+    A = inf_gen_mat(params)
+    eigvals, eigvecs = np.linalg.eig(A.T)
+    dominant_idx = np.argmax(eigvals) 
+    dominant_left_eigvec = eigvecs[:, dominant_idx]
+    dominant_left_eigvec = dominant_left_eigvec / np.sum(dominant_left_eigvec)
+    dominant_left_eigval = eigvals[dominant_idx]
+    return dominant_left_eigvec, dominant_left_eigval
             
 # A function that takes in a FixedParamSet and returns the derivative of 
 # f0

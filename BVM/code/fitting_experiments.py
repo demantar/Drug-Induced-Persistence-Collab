@@ -13,7 +13,7 @@ from fitting import *
 # parameters to the data, and prints info on how well the parameters
 # were fit compared to the old parameters
 def fit_one_tup(_, used_params, sim_type_pulsed, n_basin_hops, meas_sigma, true_cnt, 
-                true_f0_init, liklihood_version="RMS-growth", f0_strat="true", deterministic_simp=False):
+                true_f0_init, liklihood_version, f0_strat, deterministic_simp=False):
     n0 = round(true_cnt * true_f0_init)
     n1 = true_cnt - n0
     true_f0_init = n0 / true_cnt
@@ -21,7 +21,7 @@ def fit_one_tup(_, used_params, sim_type_pulsed, n_basin_hops, meas_sigma, true_
     if deterministic_simp:
         sim = utils.calc_meas_mat(sim_type_pulsed, used_params, true_f0_init, [true_cnt] * len(sim_type_pulsed.doses), meas_sigma)
     else:
-        sim = simulate(used_params, sim_type_pulsed, n0, n1, meas_sigma)
+        sim, _ = simulate(used_params, sim_type_pulsed, n0, n1, meas_sigma)
 
     if f0_strat == "true":
         best_params, f0_fit = fit_params_log_growth_pulsed(sim, type(used_params), n_basin_hops, 
@@ -41,7 +41,7 @@ def fit_one_tup(_, used_params, sim_type_pulsed, n_basin_hops, meas_sigma, true_
         raise Exception("f0_strat not in [true, equilib, =1, fit]")
 
     best_fit_error = estimation_objective(best_params, sim, meas_err=meas_sigma, 
-                                          version=liklihood_version, f0_init=true_f0_init)
+                                          version=liklihood_version, f0_init=f0_fit)
 
     true_fit_error = estimation_objective(used_params, sim, meas_err=meas_sigma, 
                                           version=liklihood_version, f0_init=true_f0_init)
