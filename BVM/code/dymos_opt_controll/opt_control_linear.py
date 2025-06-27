@@ -1,10 +1,8 @@
 # Optimal control for the linear case using Dymos
-# Majority of code written by ChatGPT and reviewed by BVM
 import numpy as np
 import openmdao.api as om
 import dymos as dm
 
-# define system parameters
 mu_0 = 0.0004
 h_mu = 0.0004
 nu_0 = 0.004
@@ -25,11 +23,11 @@ class MyODE(om.ExplicitComponent):
     def setup(self):
         nn = self.options['num_nodes']
 
-        self.add_input('f0', shape=(nn,), units=None)
-        self.add_input('c', shape=(nn,), units=None)
+        self.add_input('f0', shape=(nn,))
+        self.add_input('c', shape=(nn,))
 
-        self.add_output('f0_dot', shape=(nn,), units=None)
-        self.add_output('cost_rate', shape=(nn,), units=None)
+        self.add_output('f0_dot', shape=(nn,))
+        self.add_output('cost_rate', shape=(nn,))
 
         self.declare_partials(of='*', wrt='*', method='cs')
 
@@ -37,6 +35,7 @@ class MyODE(om.ExplicitComponent):
         f0 = inputs['f0']
         c = inputs['c']
 
+        # Code to calculate how the parameters depend on f0 and c
         if case in [1, 3]:
             mu = mu_0 + c * h_mu 
         else:
@@ -58,6 +57,7 @@ class MyODE(om.ExplicitComponent):
         outputs['cost_rate'] = f0 * lambda0 + (1 - f0) * lambda1
 
 
+# Set up the problem
 prob = om.Problem(model=om.Group())
 
 prob.driver = om.pyOptSparseDriver(print_results=True)
@@ -76,14 +76,13 @@ prob.model.add_subsystem('traj', traj)
 
 phase.set_time_options(fix_initial=True, fix_duration=True, duration_bounds=(0.0, 1200.0))
 
-phase.add_state('f0', rate_source='f0_dot', units=None, fix_initial=True, fix_final=False)
+phase.add_state('f0', rate_source='f0_dot', fix_initial=True, fix_final=False)
 phase.set_state_options('f0', lower=1e-6, upper=1 - 1e-6)
 
 phase.add_state('J', fix_initial=True, fix_final=False,
-                    rate_source='cost_rate',
-                    units=None)
+                    rate_source='cost_rate')
 
-phase.add_control('c', units=None, lower=0.00, upper=10.0)
+phase.add_control('c', lower=0.00, upper=10.0)
 
 phase.add_objective('J', loc='final')
 
@@ -92,28 +91,28 @@ prob.setup()
 prob.set_val('traj.phase0.t_initial', 0.0)
 prob.set_val('traj.phase0.t_duration', 1200.0)
 
+# calculate the equilibrium ratio (the initial f0)
 lambda0 = b0 - d0_0
 lambda1 = b1 - d1
 A = np.matrix([[lambda0 - mu_0, mu_0], [nu_0, lambda1 - nu_0]])
 
 eigvals, eigvecs = np.linalg.eig(A.T)
-print(eigvecs)
 dominant_idx = np.argmax(eigvals) 
 dominant_left_eigvec = eigvecs[:, dominant_idx]
 dominant_left_eigvec = dominant_left_eigvec / np.sum(dominant_left_eigvec)
-print(dominant_left_eigvec)
-f0_initial_value = dominant_left_eigvec[0]
+f0_initial = dominant_left_eigvec[0]
 
-J_initial_value = 0   
+J_initial = 0   
 
-prob.set_val('traj.phase0.states:f0', f0_initial_value)
-prob.set_val('traj.phase0.states:J', J_initial_value)
+prob.set_val('traj.phase0.states:f0', f0_initial)
+prob.set_val('traj.phase0.states:J', J_initial)
 prob.set_val('traj.phase0.controls:c', phase.interp(ys=[0.0, 0.0], nodes='control_input'))
 
 dm.run_problem(prob, simulate=True)
 
 from dymos.examples.plotting import plot_results
 
+# Plot the results as a sanity check
 sol = om.CaseReader(prob.get_outputs_dir() / 'dymos_solution.db').get_case('final')
 sim_prob = prob.model.traj.sim_prob
 sim = om.CaseReader(sim_prob.get_outputs_dir() / 'dymos_simulation.db').get_case('final')
@@ -137,6 +136,7 @@ import matplotlib.pyplot as plt
 axes[0].set_xlim(0, 1200)
 plt.show()
 
+# Save important results
 with open(f'linear{'I' * case}.txt', 'w') as f:
     print(f'times: {sim.outputs['traj.phase0.timeseries.time']}', file=f)
     print(f'phi: {sim.outputs['traj.phase0.timeseries.c']}', file=f)
